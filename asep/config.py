@@ -71,6 +71,9 @@ def load_settings(config_path: Path = Path("asep.yaml")) -> FileConfig:
 
     if env_settings.database_url:
         file_config.database.url = env_settings.database_url
+
+    if file_config.database.url.startswith("postgresql://"):
+        file_config.database.url = file_config.database.url.replace("postgresql://", "postgresql+psycopg://", 1)
     if env_settings.asep_artifacts_path:
         file_config.artifacts.path = env_settings.asep_artifacts_path
     if env_settings.asep_require_human_approval is not None:
