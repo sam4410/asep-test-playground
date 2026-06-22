@@ -21,4 +21,4 @@ RUN mkdir -p /app/.asep/artifacts \
 
 USER asep
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn asep.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn asep.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

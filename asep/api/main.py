@@ -16,6 +16,20 @@ from asep.tools.workspace import apply_patch
 app = FastAPI(title="ASEP", version="0.1.0")
 
 
+@app.on_event("startup")
+def on_startup() -> None:
+    import alembic.config
+    import alembic.command
+    print("Running database migrations on startup...")
+    try:
+        alembic_cfg = alembic.config.Config("alembic.ini")
+        alembic.command.upgrade(alembic_cfg, "head")
+        print("Database migrations applied successfully.")
+    except Exception as e:
+        print(f"Error running database migrations: {e}")
+
+
+
 class PlanRequest(BaseModel):
     requirement: str
 
