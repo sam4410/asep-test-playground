@@ -1,0 +1,292 @@
+ASEP Phase 1 Implementation and Railway Deployment Plan
+Autonomous Software Engineering Platform
+Date: June 21, 2026
+Source: Product Requirements Document (PRD).txt - Future Roadmap Phase 1: Basic planning and coding
+
+Reference plan for implementing Phase 1 of ASEP and deploying the first control-plane version on Railway.
+
+
+Phase 1 Implementation Plan: Basic Planning and Coding
+Summary
+Build the first working ASEP slice: a local, human-approved autonomous software engineering platform with 10-15 specialized agents that can take a user requirement, clarify it, create an implementation plan, generate tasks, assign coding work, edit a project workspace, and produce reviewable outputs.
+Phase 1 proves the core loop: Requirement -> Product spec -> Plan -> Task DAG -> Agent execution -> Code changes -> Summary for human review
+Shared memory and task state will use PostgreSQL from the start, not SQLite.
+Agent Set
+Product Manager Agent: turns prompts into structured requirements, constraints, assumptions, and acceptance criteria.
+Planner Agent: creates dependency-aware implementation tasks.
+Architect Agent: inspects the target repo and records conventions.
+Task Dispatcher: moves tasks through lifecycle states and assigns work.
+Backend Coding Agent.
+Frontend Coding Agent.
+Database Coding Agent.
+General Refactoring Agent.
+Documentation Agent.
+Basic Review Agent.
+Execution Controller.
+Core Stack
+Runtime: Python 3.12.
+Orchestration: LangGraph.
+CLI: Typer.
+Models and schemas: Pydantic.
+Database: PostgreSQL.
+Migrations: Alembic.
+ORM/data access: SQLAlchemy.
+Artifacts: local filesystem under .asep/artifacts.
+LLM provider: OpenAI first, behind a provider abstraction.
+Shared Memory v1 Using PostgreSQL
+Implement shared memory in PostgreSQL with support for:
+Episodic memory: current execution state.
+Semantic memory: project conventions and architecture decisions.
+Artifact memory: references to files, diffs, logs, plans, and reviews.
+Long-term memory: append-only lessons learned.
+Recommended table: memory_records
+id
+run_id
+type
+key
+value_json
+source
+created_at
+updated_at
+Store large artifacts as files and keep PostgreSQL references to their paths and metadata.
+Task Queue v1 Using PostgreSQL
+Implement the task queue in PostgreSQL with these states:
+PENDING
+RUNNING
+BLOCKED
+FAILED
+RETRY
+DONE
+Recommended tables:
+runs
+tasks
+task_dependencies
+task_artifacts
+agent_results
+events
+Queue behavior:
+Insert planner-created tasks into PostgreSQL.
+Resolve dependency order from task_dependencies.
+Dispatch only tasks whose dependencies are DONE.
+Mark downstream tasks as BLOCKED if a required dependency fails permanently.
+Retry failed agent calls once using stored failure context.
+Stop workflow and request human review if retry fails.
+Event Bus v1
+Use a PostgreSQL-backed event log plus in-process dispatch. Required events:
+REQUIREMENT_PARSED
+PLAN_CREATED
+TASK_READY
+TASK_STARTED
+TASK_COMPLETED
+TASK_FAILED
+CODE_CHANGE_PROPOSED
+REVIEW_COMPLETED
+WORKFLOW_COMPLETED
+Phase 1 can publish events by inserting rows into events, then synchronously notifying local subscribers. Do not introduce Kafka, NATS, Redis Streams, or Temporal yet.
+Workspace and Coding Tools
+Implement controlled workspace tools:
+List files.
+Read file.
+Search files.
+Detect language/framework.
+Propose file creation.
+Propose file update.
+Generate unified diff.
+Apply approved patch.
+Coding agents must return proposed patches. The platform must require human approval before applying code changes.
+Public CLI Interfaces
+asep run "<requirement>"
+asep plan "<requirement>"
+asep status
+asep memory list
+asep tasks list
+asep db migrate
+
+asep plan creates requirements and task graph only.
+asep run executes the full Phase 1 workflow.
+asep status shows latest run state from PostgreSQL.
+asep memory list reads memory records from PostgreSQL.
+asep tasks list reads task queue state from PostgreSQL.
+asep db migrate applies Alembic migrations.
+Configuration
+project:
+  name: "ASEP"
+  workspace_path: "."
+
+llm:
+  provider: "openai"
+  model: "gpt-5"
+
+database:
+  url: "postgresql+psycopg://asep:asep@localhost:5432/asep"
+
+execution:
+  require_human_approval: true
+  max_task_retries: 1
+
+artifacts:
+  path: ".asep/artifacts"
+
+Add a local docker-compose.yml for development PostgreSQL.
+Artifacts
+Store generated artifacts under .asep/artifacts, while metadata lives in PostgreSQL.
+Requirements JSON.
+Plan JSON.
+Proposed patches.
+Agent logs.
+Review notes.
+Run summaries.
+Testing Plan
+Unit tests should cover:
+Pydantic model validation.
+PostgreSQL repository methods for memory, tasks, events, and runs.
+Task dependency resolution.
+Task state transitions.
+Event publishing.
+Workspace file discovery and patch generation.
+Integration tests should cover:
+Alembic migrations apply cleanly.
+asep plan creates a run, requirement record, task graph, and events in PostgreSQL.
+asep run executes a mocked end-to-end workflow.
+Failed task retry happens once.
+Dependent tasks become blocked after upstream permanent failure.
+Human approval gate prevents unapproved patches from being applied.
+Golden scenario tests should use mocked LLM outputs for simple backend, simple frontend, documentation-only, ambiguous request, and retry scenarios.
+Acceptance Criteria
+A user can start PostgreSQL locally with Docker Compose.
+Migrations create all required Phase 1 tables.
+asep plan "<requirement>" produces a persisted requirement spec and task graph.
+asep run "<requirement>" executes the basic planning/coding loop.
+Shared memory is stored in PostgreSQL.
+Task queue state is stored in PostgreSQL.
+Events are persisted in PostgreSQL.
+Coding agents produce reviewable diffs.
+No code changes are applied without human approval.
+The final run summary clearly explains completed work, changed files, and remaining risks.
+Assumptions
+PostgreSQL is mandatory for Phase 1 shared memory and task queue.
+Local development uses Docker Compose for PostgreSQL unless a DATABASE_URL is provided.
+Large generated artifacts remain on disk, with PostgreSQL storing metadata and file references.
+LangGraph is used for orchestration.
+OpenAI is the first LLM provider, but the provider interface remains model/vendor-neutral.
+Docker execution sandboxes, full QA teams, security scanning, deployment automation, and autonomous debugging are deferred to later phases.
+
+
+Railway Deployment Plan for ASEP Phase 1
+Summary
+Deploy Phase 1 of ASEP on Railway as a managed control-plane system:
+FastAPI service for API, run orchestration, status, and future UI/backend access.
+Worker service for agent execution.
+Railway PostgreSQL for shared memory, task queue, event log, runs, and agent results.
+Railway Volume for local artifacts such as plans, patches, logs, review notes, and summaries.
+Human approval remains required before applying patches.
+This is suitable for Basic planning and coding. Full isolated code execution should be deferred to a later sandbox layer.
+Railway Services
+API Service
+Runs the ASEP backend. Responsibilities:
+Accept user requirements.
+Start planning or execution runs.
+Expose run status.
+Read memory, task, event, and artifact metadata.
+Serve future dashboard/API clients.
+Start command:
+uvicorn asep.api.main:app --host 0.0.0.0 --port $PORT
+
+Worker Service
+Runs background agent workflows. Responsibilities:
+Execute LangGraph workflows.
+Run Product Manager, Planner, Architect, Coding, Documentation, and Review agents.
+Persist task state and memory to PostgreSQL.
+Write generated artifacts to the mounted Railway volume.
+Start command:
+python -m asep.worker
+
+PostgreSQL Service
+Use Railway PostgreSQL as the required Phase 1 database. Stores:
+Runs.
+Tasks.
+Task dependencies.
+Events.
+Shared memory records.
+Agent results.
+Artifact metadata.
+Human approvals.
+Use Railway-provided DATABASE_URL.
+Artifact Volume
+Attach a Railway Volume to the worker service at this mount path:
+/app/.asep/artifacts
+
+Large artifacts stay on the volume; PostgreSQL stores paths and metadata.
+Required Environment Variables
+DATABASE_URL=<Railway PostgreSQL DATABASE_URL>
+OPENAI_API_KEY=<secret>
+ASEP_ARTIFACTS_PATH=/app/.asep/artifacts
+ASEP_REQUIRE_HUMAN_APPROVAL=true
+ASEP_MAX_TASK_RETRIES=1
+ASEP_ENV=production
+
+Optional variables:
+ASEP_LLM_PROVIDER=openai
+ASEP_LLM_MODEL=gpt-5
+ASEP_LOG_LEVEL=info
+
+Dockerfile Strategy
+Add a root Dockerfile so Railway builds the service consistently.
+Install Python dependencies.
+Copy the app.
+Run as a non-root user where possible.
+Support both API and worker start commands.
+Include Alembic migration tooling.
+Database Migrations
+Run Alembic migrations before starting the API service:
+alembic upgrade head
+
+Use Railway's pre-deploy command for the API service where available. If artifact volume access is needed, keep that work in the service start path because Railway volumes are runtime-mounted.
+Execution Model
+Phase 1 safe default: ASEP should not execute arbitrary generated code directly in Railway containers.
+Instead:
+Agents inspect repository files.
+Agents generate proposed patches.
+Human approves patches.
+Review agent summarizes risks.
+The system can run lightweight validation only against trusted project code.
+Later sandbox upgrade options:
+E2B for cloud sandbox execution.
+Docker/Firecracker on dedicated infrastructure.
+Kubernetes jobs for scalable isolated runs.
+Railway remains the control plane while sandbox workers perform unsafe or resource-heavy execution elsewhere.
+Deployment Flow
+Push ASEP repo to GitHub.
+Create Railway project.
+Add PostgreSQL service.
+Add API service from GitHub repo.
+Add Worker service from same repo.
+Attach Railway Volume to Worker at /app/.asep/artifacts.
+Set environment variables.
+Run migrations.
+Deploy API and Worker.
+Test with a small planning request.
+Verify records in PostgreSQL and artifacts on the mounted volume.
+Acceptance Criteria
+API service boots successfully.
+Worker service boots successfully.
+PostgreSQL migrations apply cleanly.
+DATABASE_URL is used for shared memory and task queue.
+A run can create requirement, plan, tasks, events, and memory records.
+Artifacts are written to /app/.asep/artifacts.
+Human approval is required before patch application.
+Railway logs show run lifecycle events.
+Restarting services does not lose task/memory state.
+Assumptions
+Railway is the Phase 1 deployment target.
+PostgreSQL is mandatory for shared memory and task queue.
+Railway Volume is acceptable for Phase 1 artifact persistence.
+ASEP Phase 1 is control-plane-first, not a fully isolated remote code execution platform.
+Full sandboxed execution moves to a later phase.
+
+
+References
+Local PRD: Product Requirements Document (PRD).txt
+Railway Dockerfile docs: https://docs.railway.com/builds/dockerfiles
+Railway PostgreSQL docs: https://docs.railway.com/databases/postgresql
+Railway Volumes docs: https://docs.railway.com/volumes

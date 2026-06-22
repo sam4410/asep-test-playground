@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASEP - Autonomous Software Engineering Platform</title>
+    <!-- Include premium Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon">🚀</span>
+                <h1>ASEP</h1>
+                <span class="logo-sub">Autonomous Software Engineering Platform</span>
+            </div>
+            <div class="system-status">
+                <span class="status-pulse"></span>
+                <span id="status-text">SYSTEM ACTIVE</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Workspace -->
+        <main class="dashboard-grid">
+            
+            <!-- COLUMN 1: Runs & Control Panel -->
+            <section class="panel glass" id="runs-panel">
+                <div class="panel-header">
+                    <h2>Execution Control</h2>
+                </div>
+                
+                <div class="control-card">
+                    <h3>Start New Goal</h3>
+                    <form id="new-run-form">
+                        <textarea id="requirement-input" placeholder="Describe the software engineering goal (e.g., 'Create a projects database model and implement API endpoints...')" required></textarea>
+                        <button type="submit" class="btn btn-primary" id="start-btn">
+                            <span>Execute Goal</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="runs-list-container">
+                    <h3>Historical Runs</h3>
+                    <div id="runs-list" class="runs-list">
+                        <!-- Filled dynamically -->
+                        <div class="loading-spinner">Loading runs...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMN 2: Task Graph & Event Feed -->
+            <section class="panel glass" id="tasks-panel">
+                <div class="panel-header">
+                    <h2>Task DAG & Progression</h2>
+                    <div class="run-badge" id="selected-run-status">NO RUN SELECTED</div>
+                </div>
+
+                <div class="selected-run-meta">
+                    <h3 id="selected-run-goal">Select or start a run to monitor execution...</h3>
+                    <p class="run-id-label" id="selected-run-id"></p>
+                </div>
+
+                <div class="task-dag-container">
+                    <h3>Orchestration Tasks</h3>
+                    <div id="tasks-list" class="tasks-list">
+                        <!-- Filled dynamically -->
+                        <div class="empty-state">No active tasks.</div>
+                    </div>
+                </div>
+
+                <div class="events-container">
+                    <h3>Live Event Bus Logs</h3>
+                    <div id="events-log" class="events-log">
+                        <!-- Filled dynamically -->
+                        <div class="empty-state">No events log.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMN 3: Code Review & Shared Memory -->
+            <section class="panel glass" id="review-panel">
+                <div class="panel-header">
+                    <h2>Code Review & Memory</h2>
+                </div>
+
+                <!-- Approval Gate Card -->
+                <div class="approval-card" id="approval-box" style="display: none;">
+                    <div class="approval-header">
+                        <span class="warning-icon">⚠️</span>
+                        <h3>Human Approval Required</h3>
+                    </div>
+                    <div class="approval-meta">
+                        <p><strong>Task ID:</strong> <span id="approval-task-id">-</span></p>
+                        <p><strong>File Target:</strong> <code id="approval-file-path">-</code></p>
+                    </div>
+                    <div class="patch-viewer-container">
+                        <pre><code id="patch-content-area" class="patch-content"></code></pre>
+                    </div>
+                    <div class="approval-actions">
+                        <button class="btn btn-success" id="btn-approve">Approve & Apply Patch</button>
+                    </div>
+                </div>
+
+                <!-- Memory Records -->
+                <div class="memory-container">
+                    <h3>Shared Memory Records</h3>
+                    <div id="memory-list" class="memory-list">
+                        <!-- Filled dynamically -->
+                        <div class="empty-state">No shared memory.</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Client application script -->
+    <script src="app.js"></script>
+</body>
+</html>

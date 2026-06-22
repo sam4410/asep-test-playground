@@ -1,0 +1,17 @@
+project:
+  name: "ASEP"
+  workspace_path: "."
+
+llm:
+  provider: "openai"
+  model: "gpt-5"
+
+database:
+  url: "postgresql+psycopg://postgres:admin%40123@localhost:5432/asep"
+
+execution:
+  require_human_approval: true
+  max_task_retries: 1
+
+artifacts:
+  path: ".asep/artifacts"
