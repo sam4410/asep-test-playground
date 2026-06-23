@@ -493,9 +493,14 @@ function renderComparison(originalText, editedText) {
             return `<span class="diff-removed">${escaped}</span>`;
         } else {
             // normal line: apply standard diff structure highlights (headers/locations)
-            // but do not highlight unchanged patch addition/deletion lines as added/removed
+            // also color-code unchanged patch addition/deletion lines to preserve their identity,
+            // but do not apply background highlights (so they are distinguished from active edits)
             const escaped = escapeHtml(line.content);
-            if (line.content.startsWith("@@")) {
+            if (line.content.startsWith("+") && !line.content.startsWith("+++")) {
+                return `<span class="diff-text-added">${escaped}</span>`;
+            } else if (line.content.startsWith("-") && !line.content.startsWith("---")) {
+                return `<span class="diff-text-removed">${escaped}</span>`;
+            } else if (line.content.startsWith("@@")) {
                 return `<span class="diff-location">${escaped}</span>`;
             } else if (line.content.startsWith("---") || line.content.startsWith("+++")) {
                 return `<span class="diff-header">${escaped}</span>`;

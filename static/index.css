@@ -595,6 +595,18 @@ body {
     display: block;
 }
 
+.diff-text-added {
+    color: #34d399;
+    display: block;
+    width: 100%;
+}
+
+.diff-text-removed {
+    color: #f87171;
+    display: block;
+    width: 100%;
+}
+
 .panel-body {
     flex: 1;
     overflow-y: auto;
