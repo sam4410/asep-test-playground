@@ -101,9 +101,11 @@
                         </div>
                         <div class="patch-viewer-container">
                             <pre><code id="patch-content-area" class="patch-content"></code></pre>
+                            <textarea id="patch-editor-area" class="patch-editor" style="display: none;"></textarea>
                         </div>
-                        <div class="approval-actions">
-                            <button class="btn btn-success" id="btn-approve">Approve & Apply Patch</button>
+                        <div class="approval-actions" style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" id="btn-toggle-edit" style="flex: 1;">Edit Patch</button>
+                            <button class="btn btn-success" id="btn-approve" style="flex: 2;">Approve & Apply Patch</button>
                         </div>
                     </div>
 

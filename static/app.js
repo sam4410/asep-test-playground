@@ -2,6 +2,8 @@
 
 let selectedRunId = null;
 let pollingInterval = null;
+let isEditMode = false;
+let rawPatchContent = "";
 
 // Initial Setup
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,6 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Bind approval buttons
     const approveBtn = document.getElementById("btn-approve");
     approveBtn.addEventListener("click", handleApproveTask);
+    
+    const toggleEditBtn = document.getElementById("btn-toggle-edit");
+    if (toggleEditBtn) {
+        toggleEditBtn.addEventListener("click", togglePatchEditMode);
+    }
 });
 
 // Fetch all historical runs
@@ -287,9 +294,24 @@ async function checkApprovalGate(tasks) {
         
         document.getElementById("approval-file-path").textContent = patchData.path;
         
+        // Reset edit mode state
+        isEditMode = false;
+        rawPatchContent = patchData.content;
+        
+        const pre = document.getElementById("patch-content-area");
+        const textarea = document.getElementById("patch-editor-area");
+        const toggleBtn = document.getElementById("btn-toggle-edit");
+        
+        if (pre) pre.style.display = "block";
+        if (textarea) {
+            textarea.style.display = "none";
+            textarea.value = rawPatchContent;
+        }
+        if (toggleBtn) toggleBtn.textContent = "Edit Patch";
+        
         // Highlight patch content lines
-        const highlighted = colorizeDiff(patchData.content);
-        document.getElementById("patch-content-area").innerHTML = highlighted;
+        const highlighted = colorizeDiff(rawPatchContent);
+        if (pre) pre.innerHTML = highlighted;
         
         box.style.display = "flex";
     } catch (e) {
@@ -333,9 +355,23 @@ async function handleApproveTask() {
         approveBtn.disabled = true;
         approveBtn.textContent = "Applying...";
         
-        const response = await fetch(`/api/v1/tasks/${taskId}/approve`, {
+        // If in edit mode currently, make sure we synchronize the value
+        const textarea = document.getElementById("patch-editor-area");
+        const currentContent = textarea ? textarea.value : rawPatchContent;
+        
+        const requestOpts = {
             method: "POST"
-        });
+        };
+        
+        // If the patch was edited, send it in the request body
+        if (currentContent && currentContent !== rawPatchContent) {
+            requestOpts.headers = {
+                "Content-Type": "application/json"
+            };
+            requestOpts.body = JSON.stringify({ edited_patch: currentContent });
+        }
+        
+        const response = await fetch(`/api/v1/tasks/${taskId}/approve`, requestOpts);
         
         if (!response.ok) throw new Error("Failed to approve task");
         
@@ -353,6 +389,33 @@ async function handleApproveTask() {
     } finally {
         approveBtn.disabled = false;
         approveBtn.textContent = "Approve & Apply Patch";
+    }
+}
+
+function togglePatchEditMode() {
+    const pre = document.getElementById("patch-content-area");
+    const textarea = document.getElementById("patch-editor-area");
+    const btn = document.getElementById("btn-toggle-edit");
+    
+    if (!pre || !textarea || !btn) return;
+    
+    if (isEditMode) {
+        // Switch back to view mode: parse changes from editor and format them
+        rawPatchContent = textarea.value;
+        pre.innerHTML = colorizeDiff(rawPatchContent);
+        
+        pre.style.display = "block";
+        textarea.style.display = "none";
+        btn.textContent = "Edit Patch";
+        isEditMode = false;
+    } else {
+        // Switch to edit mode: load raw content into editor textarea
+        textarea.value = rawPatchContent;
+        
+        pre.style.display = "none";
+        textarea.style.display = "block";
+        btn.textContent = "View Diff";
+        isEditMode = true;
     }
 }
 

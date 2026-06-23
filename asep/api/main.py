@@ -58,6 +58,10 @@ class PlanRequest(BaseModel):
     requirement: str
 
 
+class ApproveRequest(BaseModel):
+    edited_patch: str | None = None
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -205,7 +209,7 @@ def get_task_patch(task_id: str) -> dict:
 
 
 @app.post("/api/v1/tasks/{task_id}/approve")
-def approve_task(task_id: str) -> dict:
+def approve_task(task_id: str, request: ApproveRequest = ApproveRequest()) -> dict:
     with session_scope() as session:
         task = session.get(TaskModel, task_id)
         if not task:
@@ -222,10 +226,22 @@ def approve_task(task_id: str) -> dict:
         workspace = Path(settings.project.workspace_path)
         patch_file = workspace / artifact.path
         
-        if patch_file.exists():
-            patch_content = patch_file.read_text(encoding="utf-8")
+        if request and request.edited_patch:
+            patch_content = request.edited_patch
+            try:
+                if patch_file.parent.exists():
+                    patch_file.write_text(patch_content, encoding="utf-8")
+            except Exception as e:
+                print(f"Warning: Failed to write edited patch locally: {e}")
+            if not artifact.metadata_json:
+                artifact.metadata_json = {}
+            artifact.metadata_json["content"] = patch_content
+            session.add(artifact)
         else:
-            patch_content = artifact.metadata_json.get("content", "")
+            if patch_file.exists():
+                patch_content = patch_file.read_text(encoding="utf-8")
+            else:
+                patch_content = artifact.metadata_json.get("content", "")
             
         if not patch_content:
             raise HTTPException(status_code=404, detail="Patch content not found")
