@@ -367,7 +367,7 @@ function closePatchModal() {
 
 // Colorize unified diff formatting
 function colorizeDiff(text) {
-    const lines = text.split("\n");
+    const lines = (text || "").replace(/\r/g, "").split("\n");
     return lines.map(line => {
         const escaped = escapeHtml(line);
         if (line.startsWith("+") && !line.startsWith("+++")) {
@@ -473,18 +473,29 @@ function renderComparison(originalText, editedText) {
     if (!container) return;
     
     container.innerHTML = diffLines.map(line => {
-        const escaped = escapeHtml(line.content);
+        let displayContent = line.content;
+        
         if (line.type === "added") {
+            if (displayContent.startsWith("+") || displayContent.startsWith("-")) {
+                displayContent = "+" + displayContent.substring(1);
+            } else {
+                displayContent = "+" + displayContent;
+            }
+            const escaped = escapeHtml(displayContent);
             return `<span class="diff-added">${escaped}</span>`;
         } else if (line.type === "removed") {
+            if (displayContent.startsWith("+") || displayContent.startsWith("-")) {
+                displayContent = "-" + displayContent.substring(1);
+            } else {
+                displayContent = "-" + displayContent;
+            }
+            const escaped = escapeHtml(displayContent);
             return `<span class="diff-removed">${escaped}</span>`;
         } else {
-            // normal line: apply standard diff highlights
-            if (line.content.startsWith("+") && !line.content.startsWith("+++")) {
-                return `<span class="diff-added">${escaped}</span>`;
-            } else if (line.content.startsWith("-") && !line.content.startsWith("---")) {
-                return `<span class="diff-removed">${escaped}</span>`;
-            } else if (line.content.startsWith("@@")) {
+            // normal line: apply standard diff structure highlights (headers/locations)
+            // but do not highlight unchanged patch addition/deletion lines as added/removed
+            const escaped = escapeHtml(line.content);
+            if (line.content.startsWith("@@")) {
                 return `<span class="diff-location">${escaped}</span>`;
             } else if (line.content.startsWith("---") || line.content.startsWith("+++")) {
                 return `<span class="diff-header">${escaped}</span>`;
@@ -495,8 +506,8 @@ function renderComparison(originalText, editedText) {
 }
 
 function computeDiff(oldText, newText) {
-    const oldLines = oldText.split("\n");
-    const newLines = newText.split("\n");
+    const oldLines = (oldText || "").replace(/\r/g, "").split("\n");
+    const newLines = (newText || "").replace(/\r/g, "").split("\n");
     const result = [];
     
     let i = 0, j = 0;
