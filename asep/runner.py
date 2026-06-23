@@ -175,11 +175,19 @@ class TaskRunner:
 
                 # Save artifacts references
                 for path in result.artifacts:
+                    meta = {}
+                    if path.endswith(".diff"):
+                        try:
+                            full_path = Path(self.workspace_path) / path
+                            if full_path.exists():
+                                meta["content"] = full_path.read_text(encoding="utf-8")
+                        except Exception as e:
+                            logger.error(f"Failed to read patch content for metadata: {e}")
                     session.add(TaskArtifactModel(
                         task_id=task.id,
                         path=path,
                         kind="diff" if path.endswith(".diff") else "report",
-                        metadata_json={}
+                        metadata_json=meta
                     ))
 
                 # Handle Human Approval Gate for coding tasks

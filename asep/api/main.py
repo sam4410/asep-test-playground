@@ -18,8 +18,32 @@ app = FastAPI(title="ASEP", version="0.1.0")
 
 @app.on_event("startup")
 def on_startup() -> None:
+    import os
     import alembic.config
     import alembic.command
+    from asep.config import load_settings
+    
+    def mask_url(url: str | None) -> str:
+        if not url:
+            return "None"
+        if "@" in url:
+            try:
+                parts = url.split("@", 1)
+                scheme_and_user = parts[0]
+                if ":" in scheme_and_user:
+                    subparts = scheme_and_user.split(":")
+                    # Keep scheme and username, mask password
+                    return f"{subparts[0]}:{subparts[1]}:***@{parts[1]}"
+            except Exception:
+                pass
+        return "URL-present-but-failed-to-mask"
+
+    env_url = os.environ.get("DATABASE_URL")
+    settings = load_settings()
+    config_url = settings.database.url
+
+    print(f"DATABASE_URL in os.environ: {mask_url(env_url)}")
+    print(f"DATABASE_URL in load_settings: {mask_url(config_url)}")
     print("Running database migrations on startup...")
     try:
         alembic_cfg = alembic.config.Config("alembic.ini")
@@ -168,10 +192,15 @@ def get_task_patch(task_id: str) -> dict:
         settings = load_settings()
         workspace = Path(settings.project.workspace_path)
         patch_file = workspace / artifact.path
-        if not patch_file.exists():
-            raise HTTPException(status_code=404, detail=f"Patch file not found on disk: {artifact.path}")
+        
+        if patch_file.exists():
+            patch_content = patch_file.read_text(encoding="utf-8")
+        else:
+            patch_content = artifact.metadata_json.get("content", "")
             
-        patch_content = patch_file.read_text(encoding="utf-8")
+        if not patch_content:
+            raise HTTPException(status_code=404, detail=f"Patch content not found (File exists: {patch_file.exists()})")
+            
         return {"task_id": task_id, "path": artifact.path, "content": patch_content}
 
 
@@ -192,10 +221,14 @@ def approve_task(task_id: str) -> dict:
         settings = load_settings()
         workspace = Path(settings.project.workspace_path)
         patch_file = workspace / artifact.path
-        if not patch_file.exists():
-            raise HTTPException(status_code=404, detail=f"Patch file not found on disk: {artifact.path}")
+        
+        if patch_file.exists():
+            patch_content = patch_file.read_text(encoding="utf-8")
+        else:
+            patch_content = artifact.metadata_json.get("content", "")
             
-        patch_content = patch_file.read_text(encoding="utf-8")
+        if not patch_content:
+            raise HTTPException(status_code=404, detail="Patch content not found")
         
         target_file = ""
         for line in patch_content.splitlines():
