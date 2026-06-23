@@ -88,39 +88,41 @@
                     <h2>Code Review & Memory</h2>
                 </div>
 
-                <!-- Approval Gate Card -->
-                <div class="approval-card" id="approval-box" style="display: none;">
-                    <div class="approval-header">
-                        <span class="warning-icon">⚠️</span>
-                        <h3>Human Approval Required</h3>
+                <div class="panel-body">
+                    <!-- Approval Gate Card -->
+                    <div class="approval-card" id="approval-box" style="display: none;">
+                        <div class="approval-header">
+                            <span class="warning-icon">⚠️</span>
+                            <h3>Human Approval Required</h3>
+                        </div>
+                        <div class="approval-meta">
+                            <p><strong>Task ID:</strong> <span id="approval-task-id">-</span></p>
+                            <p><strong>File Target:</strong> <code id="approval-file-path">-</code></p>
+                        </div>
+                        <div class="patch-viewer-container">
+                            <pre><code id="patch-content-area" class="patch-content"></code></pre>
+                        </div>
+                        <div class="approval-actions">
+                            <button class="btn btn-success" id="btn-approve">Approve & Apply Patch</button>
+                        </div>
                     </div>
-                    <div class="approval-meta">
-                        <p><strong>Task ID:</strong> <span id="approval-task-id">-</span></p>
-                        <p><strong>File Target:</strong> <code id="approval-file-path">-</code></p>
-                    </div>
-                    <div class="patch-viewer-container">
-                        <pre><code id="patch-content-area" class="patch-content"></code></pre>
-                    </div>
-                    <div class="approval-actions">
-                        <button class="btn btn-success" id="btn-approve">Approve & Apply Patch</button>
-                    </div>
-                </div>
 
-                <!-- Agent Results -->
-                <div class="results-container" style="margin-bottom: 24px;">
-                    <h3>Agent Execution Results</h3>
-                    <div id="results-list" class="results-list">
-                        <!-- Filled dynamically -->
-                        <div class="empty-state">No agent results yet.</div>
+                    <!-- Agent Results -->
+                    <div class="results-container" style="margin-bottom: 24px; padding: 0 20px;">
+                        <h3>Agent Execution Results</h3>
+                        <div id="results-list" class="results-list">
+                            <!-- Filled dynamically -->
+                            <div class="empty-state">No agent results yet.</div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Memory Records -->
-                <div class="memory-container">
-                    <h3>Shared Memory Records</h3>
-                    <div id="memory-list" class="memory-list">
-                        <!-- Filled dynamically -->
-                        <div class="empty-state">No shared memory.</div>
+                    <!-- Memory Records -->
+                    <div class="memory-container">
+                        <h3>Shared Memory Records</h3>
+                        <div id="memory-list" class="memory-list">
+                            <!-- Filled dynamically -->
+                            <div class="empty-state">No shared memory.</div>
+                        </div>
                     </div>
                 </div>
             </section>

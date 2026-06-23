@@ -580,10 +580,15 @@ body {
     display: block;
 }
 
-/* Memory panel */
-.memory-container {
+.panel-body {
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Memory panel */
+.memory-container {
     padding: 16px 20px;
 }
 
