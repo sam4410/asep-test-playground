@@ -330,21 +330,30 @@ function openPatchModal() {
     document.getElementById("modal-task-id").textContent = taskId;
     document.getElementById("modal-file-path").textContent = filePath;
     
-    // Reset view state in modal
-    isEditMode = false;
-    const pre = document.getElementById("modal-patch-content-area");
+    // Populate left pane with original patch (Read-Only)
+    const originalPre = document.getElementById("modal-patch-original-area");
+    if (originalPre) {
+        originalPre.innerHTML = colorizeDiff(rawPatchContent);
+    }
+    
+    // Default right pane to Edit Mode
+    isEditMode = true;
+    const rightHeader = document.getElementById("modal-right-header");
+    const comparisonPre = document.getElementById("modal-patch-comparison-area");
     const textarea = document.getElementById("modal-patch-editor-area");
     const toggleBtn = document.getElementById("modal-btn-toggle-edit");
     
-    if (pre) {
-        pre.style.display = "block";
-        pre.innerHTML = colorizeDiff(rawPatchContent);
-    }
+    if (rightHeader) rightHeader.textContent = "Your Edited Patch (Edit Mode)";
+    if (comparisonPre) comparisonPre.style.display = "none";
     if (textarea) {
-        textarea.style.display = "none";
-        textarea.value = rawPatchContent;
+        textarea.style.display = "block";
+        // If the editor textarea was already edited for this task, preserve it; otherwise reset to rawPatchContent
+        if (!textarea.value || box.dataset.lastTaskId !== taskId) {
+            textarea.value = rawPatchContent;
+            box.dataset.lastTaskId = taskId;
+        }
     }
-    if (toggleBtn) toggleBtn.textContent = "Edit Patch";
+    if (toggleBtn) toggleBtn.textContent = "View Diff";
     
     modal.style.display = "flex";
 }
@@ -430,30 +439,115 @@ async function handleApproveTask() {
 }
 
 function togglePatchEditMode() {
-    const pre = document.getElementById("modal-patch-content-area");
+    const rightHeader = document.getElementById("modal-right-header");
+    const comparisonPre = document.getElementById("modal-patch-comparison-area");
     const textarea = document.getElementById("modal-patch-editor-area");
     const btn = document.getElementById("modal-btn-toggle-edit");
     
-    if (!pre || !textarea || !btn) return;
+    if (!comparisonPre || !textarea || !btn) return;
     
     if (isEditMode) {
-        // Switch back to view mode: parse changes from editor and format them
-        rawPatchContent = textarea.value;
-        pre.innerHTML = colorizeDiff(rawPatchContent);
+        // Switch to View Diff mode: show comparison diff relative to rawPatchContent
+        if (rightHeader) rightHeader.textContent = "Your Edited Patch (Diff Comparison)";
         
-        pre.style.display = "block";
+        renderComparison(rawPatchContent, textarea.value);
+        
+        comparisonPre.style.display = "block";
         textarea.style.display = "none";
         btn.textContent = "Edit Patch";
         isEditMode = false;
     } else {
-        // Switch to edit mode: load raw content into editor textarea
-        textarea.value = rawPatchContent;
+        // Switch to Edit mode: show textarea editor
+        if (rightHeader) rightHeader.textContent = "Your Edited Patch (Edit Mode)";
         
-        pre.style.display = "none";
+        comparisonPre.style.display = "none";
         textarea.style.display = "block";
         btn.textContent = "View Diff";
         isEditMode = true;
     }
+}
+
+function renderComparison(originalText, editedText) {
+    const diffLines = computeDiff(originalText, editedText);
+    const container = document.getElementById("modal-patch-comparison-area");
+    if (!container) return;
+    
+    container.innerHTML = diffLines.map(line => {
+        const escaped = escapeHtml(line.content);
+        if (line.type === "added") {
+            return `<span class="diff-added">${escaped}</span>`;
+        } else if (line.type === "removed") {
+            return `<span class="diff-removed">${escaped}</span>`;
+        } else {
+            // normal line: apply standard diff highlights
+            if (line.content.startsWith("+") && !line.content.startsWith("+++")) {
+                return `<span class="diff-added">${escaped}</span>`;
+            } else if (line.content.startsWith("-") && !line.content.startsWith("---")) {
+                return `<span class="diff-removed">${escaped}</span>`;
+            } else if (line.content.startsWith("@@")) {
+                return `<span class="diff-location">${escaped}</span>`;
+            } else if (line.content.startsWith("---") || line.content.startsWith("+++")) {
+                return `<span class="diff-header">${escaped}</span>`;
+            }
+            return escaped;
+        }
+    }).join("\n");
+}
+
+function computeDiff(oldText, newText) {
+    const oldLines = oldText.split("\n");
+    const newLines = newText.split("\n");
+    const result = [];
+    
+    let i = 0, j = 0;
+    while (i < oldLines.length || j < newLines.length) {
+        if (i < oldLines.length && j < newLines.length && oldLines[i] === newLines[j]) {
+            result.push({ type: "normal", content: oldLines[i] });
+            i++;
+            j++;
+        } else {
+            // Simple window search to align insertions/deletions
+            let foundInNew = -1;
+            for (let k = j; k < Math.min(j + 20, newLines.length); k++) {
+                if (newLines[k] === oldLines[i]) {
+                    foundInNew = k;
+                    break;
+                }
+            }
+            
+            if (foundInNew !== -1) {
+                while (j < foundInNew) {
+                    result.push({ type: "added", content: newLines[j] });
+                    j++;
+                }
+            } else {
+                let foundInOld = -1;
+                for (let k = i; k < Math.min(i + 20, oldLines.length); k++) {
+                    if (oldLines[k] === newLines[j]) {
+                        foundInOld = k;
+                        break;
+                    }
+                }
+                
+                if (foundInOld !== -1) {
+                    while (i < foundInOld) {
+                        result.push({ type: "removed", content: oldLines[i] });
+                        i++;
+                    }
+                } else {
+                    if (i < oldLines.length) {
+                        result.push({ type: "removed", content: oldLines[i] });
+                        i++;
+                    }
+                    if (j < newLines.length) {
+                        result.push({ type: "added", content: newLines[j] });
+                        j++;
+                    }
+                }
+            }
+        }
+    }
+    return result;
 }
 
 // Helper to map status to badge class

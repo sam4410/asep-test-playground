@@ -138,9 +138,23 @@
                 <p><strong>Task ID:</strong> <span id="modal-task-id">-</span></p>
                 <p><strong>File Target:</strong> <code id="modal-file-path">-</code></p>
             </div>
-            <div class="modal-body-container">
-                <pre><code id="modal-patch-content-area" class="patch-content"></code></pre>
-                <textarea id="modal-patch-editor-area" class="patch-editor" style="display: none;"></textarea>
+            <div class="modal-body-container" style="display: flex; gap: 20px; height: 100%;">
+                <!-- Left Panel: Original Proposed Patch (Read-Only) -->
+                <div class="modal-panel-half">
+                    <div class="panel-half-header">Original Proposed Patch</div>
+                    <div class="panel-half-body">
+                        <pre><code id="modal-patch-original-area" class="patch-content"></code></pre>
+                    </div>
+                </div>
+                
+                <!-- Right Panel: Edited Patch (Edit / View Diff) -->
+                <div class="modal-panel-half">
+                    <div class="panel-half-header" id="modal-right-header">Your Edited Patch</div>
+                    <div class="panel-half-body" style="position: relative;">
+                        <pre><code id="modal-patch-comparison-area" class="patch-content" style="display: none;"></code></pre>
+                        <textarea id="modal-patch-editor-area" class="patch-editor"></textarea>
+                    </div>
+                </div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="modal-btn-toggle-edit" style="width: auto; padding: 10px 24px;">Edit Patch</button>
