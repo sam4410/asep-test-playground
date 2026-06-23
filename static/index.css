@@ -649,3 +649,22 @@ body {
     border: 1px dashed var(--border-color);
     border-radius: 8px;
 }
+
+.text-success {
+    color: var(--status-done) !important;
+}
+
+.text-danger {
+    color: var(--status-failed) !important;
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(99, 102, 241, 0.4);
+}

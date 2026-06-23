@@ -176,7 +176,7 @@ class TaskRunner:
                 # Save artifacts references
                 for path in result.artifacts:
                     meta = {}
-                    if path.endswith(".diff"):
+                    if path.endswith(".diff") or path.endswith(".md"):
                         try:
                             full_path = Path(self.workspace_path) / path
                             if full_path.exists():

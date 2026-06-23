@@ -124,14 +124,15 @@ async function pollRunData() {
     if (!selectedRunId) return;
     
     try {
-        const [runRes, tasksRes, memoryRes, eventsRes] = await Promise.all([
+        const [runRes, tasksRes, memoryRes, eventsRes, resultsRes] = await Promise.all([
             fetch(`/api/v1/runs/${selectedRunId}`),
             fetch(`/api/v1/runs/${selectedRunId}/tasks`),
             fetch(`/api/v1/runs/${selectedRunId}/memory`),
-            fetch(`/api/v1/runs/${selectedRunId}/events`)
+            fetch(`/api/v1/runs/${selectedRunId}/events`),
+            fetch(`/api/v1/runs/${selectedRunId}/results`)
         ]);
         
-        if (!runRes.ok || !tasksRes.ok || !memoryRes.ok || !eventsRes.ok) {
+        if (!runRes.ok || !tasksRes.ok || !memoryRes.ok || !eventsRes.ok || !resultsRes.ok) {
             throw new Error("Failed to poll run details");
         }
         
@@ -139,6 +140,7 @@ async function pollRunData() {
         const tasks = await tasksRes.json();
         const memory = await memoryRes.json();
         const events = await eventsRes.json();
+        const results = await resultsRes.json();
         
         // Update header & status card
         document.getElementById("selected-run-goal").textContent = run.goal;
@@ -152,6 +154,7 @@ async function pollRunData() {
         renderTasks(tasks);
         renderEvents(events);
         renderMemory(memory);
+        renderResults(results);
         
         // Check for pending approval tasks
         checkApprovalGate(tasks);
@@ -365,4 +368,72 @@ function getStatusBadgeClass(status) {
         case "BLOCKED": return "badge-blocked";
         default: return "badge-pending";
     }
+}
+
+function renderResults(results) {
+    const list = document.getElementById("results-list");
+    if (!list) return;
+    if (results.length === 0) {
+        list.innerHTML = `<div class="empty-state">No agent results yet.</div>`;
+        return;
+    }
+    list.innerHTML = "";
+    results.forEach(res => {
+        const card = document.createElement("div");
+        card.className = "memory-card";
+        const statusClass = res.status === "success" ? "text-success" : "text-danger";
+        let reportBtn = "";
+        const hasReport = res.artifacts && res.artifacts.some(a => a.endsWith(".md"));
+        if (hasReport) {
+            reportBtn = `<button class="btn btn-secondary btn-sm" style="margin-top: 8px; font-size: 10px; padding: 4px 8px; width: auto;" onclick="viewReport('${res.task_id}')">View Report</button>`;
+        }
+        card.innerHTML = `
+            <div class="memory-card-header">
+                <span class="memory-card-key">${res.agent_name}</span>
+                <span class="memory-card-type ${statusClass}">${res.status.toUpperCase()}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">${res.summary}</div>
+            ${reportBtn}
+        `;
+        list.appendChild(card);
+    });
+}
+
+async function viewReport(taskId) {
+    try {
+        const res = await fetch(`/api/v1/tasks/${taskId}/report`);
+        if (!res.ok) throw new Error("Report not found");
+        const data = await res.json();
+        const reportWindow = window.open("", "_blank");
+        reportWindow.document.write(`
+            <html>
+            <head>
+                <title>ASEP Agent Report</title>
+                <style>
+                    body { font-family: sans-serif; background: #0d0f14; color: #e2e8f0; padding: 30px; line-height: 1.6; }
+                    pre { background: #151922; padding: 15px; border-radius: 8px; border: 1px solid #242b3b; overflow-x: auto; }
+                    code { font-family: monospace; color: #c792ea; }
+                    h1, h2, h3 { color: #82aaff; }
+                </style>
+            </head>
+            <body>
+                <h2>ASEP Agent Report</h2>
+                <p><strong>Path:</strong> <code>${data.path}</code></p>
+                <hr style="border: 0; border-top: 1px solid #242b3b; margin: 20px 0;">
+                <div>${formatMarkdownSimple(data.content)}</div>
+            </body>
+            </html>
+        `);
+        reportWindow.document.close();
+    } catch (e) { alert("Error fetching report: " + e.message); }
+}
+
+function formatMarkdownSimple(text) {
+    return text
+        .replace(/### (.*)/g, '<h3>$1</h3>')
+        .replace(/## (.*)/g, '<h2>$1</h2>')
+        .replace(/# (.*)/g, '<h1>$1</h1>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/- (.*)/g, '<li>$1</li>')
+        .replace(/\n/g, '<br>');
 }

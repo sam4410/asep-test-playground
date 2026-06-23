@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from asep.config import load_settings
 from asep.db.session import session_scope
-from asep.db.models import RunModel, TaskModel, TaskDependencyModel, MemoryRecordModel, EventModel, TaskArtifactModel
+from asep.db.models import RunModel, TaskModel, TaskDependencyModel, MemoryRecordModel, EventModel, TaskArtifactModel, AgentResultModel
 from asep.orchestration import PlanningWorkflow
 from asep.repositories import EventRepository
 from asep.tools.workspace import apply_patch
@@ -250,6 +250,46 @@ def approve_task(task_id: str) -> dict:
         EventRepository(session).publish("REVIEW_COMPLETED", source="api_reviewer", payload={"task_id": task.id, "action": "approved"}, run_id=task.run_id)
         session.commit()
         return {"status": "success", "message": f"Applied patch to {target_file} successfully."}
+@app.get("/api/v1/runs/{run_id}/results")
+def get_run_results(run_id: str) -> list[dict]:
+    with session_scope() as session:
+        stmt = select(AgentResultModel).where(AgentResultModel.run_id == run_id).order_by(AgentResultModel.created_at.asc())
+        results = session.execute(stmt).scalars().all()
+        return [
+            {
+                "id": r.id,
+                "task_id": r.task_id,
+                "agent_name": r.agent_name,
+                "status": r.status,
+                "summary": r.summary,
+                "artifacts": r.artifacts,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in results
+        ]
+
+
+@app.get("/api/v1/tasks/{task_id}/report")
+def get_task_report(task_id: str) -> dict:
+    with session_scope() as session:
+        stmt = select(TaskArtifactModel).where(TaskArtifactModel.task_id == task_id, TaskArtifactModel.kind == "report").order_by(TaskArtifactModel.created_at.desc()).limit(1)
+        artifact = session.execute(stmt).scalar_one_or_none()
+        if not artifact:
+            raise HTTPException(status_code=404, detail="No report artifact found for this task")
+            
+        settings = load_settings()
+        workspace = Path(settings.project.workspace_path)
+        report_file = workspace / artifact.path
+        
+        if report_file.exists():
+            report_content = report_file.read_text(encoding="utf-8")
+        else:
+            report_content = artifact.metadata_json.get("content", "")
+            
+        if not report_content:
+            raise HTTPException(status_code=404, detail="Report content not found")
+            
+        return {"task_id": task_id, "path": artifact.path, "content": report_content}
 
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
