@@ -99,13 +99,8 @@
                             <p><strong>Task ID:</strong> <span id="approval-task-id">-</span></p>
                             <p><strong>File Target:</strong> <code id="approval-file-path">-</code></p>
                         </div>
-                        <div class="patch-viewer-container">
-                            <pre><code id="patch-content-area" class="patch-content"></code></pre>
-                            <textarea id="patch-editor-area" class="patch-editor" style="display: none;"></textarea>
-                        </div>
-                        <div class="approval-actions" style="display: flex; gap: 8px;">
-                            <button class="btn btn-secondary" id="btn-toggle-edit" style="flex: 1;">Edit Patch</button>
-                            <button class="btn btn-success" id="btn-approve" style="flex: 2;">Approve & Apply Patch</button>
+                        <div class="approval-actions">
+                            <button class="btn btn-primary" id="btn-open-modal">Review & Edit Patch</button>
                         </div>
                     </div>
 
@@ -130,6 +125,28 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- Code Review & Edit Modal -->
+    <div id="patch-modal" class="modal" style="display: none;">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3>Review & Edit Proposed Patch</h3>
+                <button class="close-btn" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-meta">
+                <p><strong>Task ID:</strong> <span id="modal-task-id">-</span></p>
+                <p><strong>File Target:</strong> <code id="modal-file-path">-</code></p>
+            </div>
+            <div class="modal-body-container">
+                <pre><code id="modal-patch-content-area" class="patch-content"></code></pre>
+                <textarea id="modal-patch-editor-area" class="patch-editor" style="display: none;"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modal-btn-toggle-edit" style="width: auto; padding: 10px 24px;">Edit Patch</button>
+                <button class="btn btn-success" id="modal-btn-approve" style="width: auto; padding: 10px 24px;">Approve & Apply Patch</button>
+            </div>
+        </div>
     </div>
 
     <!-- Client application script -->

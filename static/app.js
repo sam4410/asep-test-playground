@@ -13,13 +13,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("new-run-form");
     form.addEventListener("submit", handleStartRun);
     
-    // Bind approval buttons
-    const approveBtn = document.getElementById("btn-approve");
-    approveBtn.addEventListener("click", handleApproveTask);
+    // Bind approval modal controls
+    const openModalBtn = document.getElementById("btn-open-modal");
+    if (openModalBtn) {
+        openModalBtn.addEventListener("click", openPatchModal);
+    }
     
-    const toggleEditBtn = document.getElementById("btn-toggle-edit");
-    if (toggleEditBtn) {
-        toggleEditBtn.addEventListener("click", togglePatchEditMode);
+    const closeModalBtn = document.getElementById("modal-close-btn");
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", closePatchModal);
+    }
+    
+    const modalToggleEditBtn = document.getElementById("modal-btn-toggle-edit");
+    if (modalToggleEditBtn) {
+        modalToggleEditBtn.addEventListener("click", togglePatchEditMode);
+    }
+    
+    const modalApproveBtn = document.getElementById("modal-btn-approve");
+    if (modalApproveBtn) {
+        modalApproveBtn.addEventListener("click", handleApproveTask);
     }
 });
 
@@ -276,6 +288,7 @@ async function checkApprovalGate(tasks) {
     
     if (!approvalTask) {
         box.style.display = "none";
+        closePatchModal(); // Close modal if task is completed
         return;
     }
     
@@ -285,7 +298,7 @@ async function checkApprovalGate(tasks) {
     }
     
     box.dataset.taskId = approvalTask.id;
-    document.getElementById("approval-task-id").textContent = approvalTask.id;
+    document.getElementById("approval-task-id").textContent = approvalTask.id.substring(0, 8) + "...";
     
     try {
         const res = await fetch(`/api/v1/tasks/${approvalTask.id}/patch`);
@@ -294,29 +307,52 @@ async function checkApprovalGate(tasks) {
         
         document.getElementById("approval-file-path").textContent = patchData.path;
         
-        // Reset edit mode state
+        // Load raw patch content into global state
         isEditMode = false;
         rawPatchContent = patchData.content;
-        
-        const pre = document.getElementById("patch-content-area");
-        const textarea = document.getElementById("patch-editor-area");
-        const toggleBtn = document.getElementById("btn-toggle-edit");
-        
-        if (pre) pre.style.display = "block";
-        if (textarea) {
-            textarea.style.display = "none";
-            textarea.value = rawPatchContent;
-        }
-        if (toggleBtn) toggleBtn.textContent = "Edit Patch";
-        
-        // Highlight patch content lines
-        const highlighted = colorizeDiff(rawPatchContent);
-        if (pre) pre.innerHTML = highlighted;
         
         box.style.display = "flex";
     } catch (e) {
         console.error("Error fetching approval patch:", e);
         box.style.display = "none";
+    }
+}
+
+// Modal control actions
+function openPatchModal() {
+    const modal = document.getElementById("patch-modal");
+    if (!modal) return;
+    
+    const box = document.getElementById("approval-box");
+    const taskId = box.dataset.taskId;
+    const filePath = document.getElementById("approval-file-path").textContent;
+    
+    document.getElementById("modal-task-id").textContent = taskId;
+    document.getElementById("modal-file-path").textContent = filePath;
+    
+    // Reset view state in modal
+    isEditMode = false;
+    const pre = document.getElementById("modal-patch-content-area");
+    const textarea = document.getElementById("modal-patch-editor-area");
+    const toggleBtn = document.getElementById("modal-btn-toggle-edit");
+    
+    if (pre) {
+        pre.style.display = "block";
+        pre.innerHTML = colorizeDiff(rawPatchContent);
+    }
+    if (textarea) {
+        textarea.style.display = "none";
+        textarea.value = rawPatchContent;
+    }
+    if (toggleBtn) toggleBtn.textContent = "Edit Patch";
+    
+    modal.style.display = "flex";
+}
+
+function closePatchModal() {
+    const modal = document.getElementById("patch-modal");
+    if (modal) {
+        modal.style.display = "none";
     }
 }
 
@@ -347,7 +383,7 @@ function escapeHtml(str) {
 async function handleApproveTask() {
     const box = document.getElementById("approval-box");
     const taskId = box.dataset.taskId;
-    const approveBtn = document.getElementById("btn-approve");
+    const approveBtn = document.getElementById("modal-btn-approve");
     
     if (!taskId) return;
     
@@ -355,8 +391,8 @@ async function handleApproveTask() {
         approveBtn.disabled = true;
         approveBtn.textContent = "Applying...";
         
-        // If in edit mode currently, make sure we synchronize the value
-        const textarea = document.getElementById("patch-editor-area");
+        // Get the latest text from the modal editor
+        const textarea = document.getElementById("modal-patch-editor-area");
         const currentContent = textarea ? textarea.value : rawPatchContent;
         
         const requestOpts = {
@@ -375,6 +411,7 @@ async function handleApproveTask() {
         
         if (!response.ok) throw new Error("Failed to approve task");
         
+        closePatchModal();
         box.style.display = "none";
         alert("Patch applied successfully! Resuming tasks execution loop.");
         
@@ -393,9 +430,9 @@ async function handleApproveTask() {
 }
 
 function togglePatchEditMode() {
-    const pre = document.getElementById("patch-content-area");
-    const textarea = document.getElementById("patch-editor-area");
-    const btn = document.getElementById("btn-toggle-edit");
+    const pre = document.getElementById("modal-patch-content-area");
+    const textarea = document.getElementById("modal-patch-editor-area");
+    const btn = document.getElementById("modal-btn-toggle-edit");
     
     if (!pre || !textarea || !btn) return;
     
