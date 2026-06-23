@@ -19,6 +19,4 @@ RUN pip install --no-cache-dir --upgrade pip \
 RUN mkdir -p /app/.asep/artifacts \
     && chown -R asep:asep /app
 
-USER asep
-
 CMD ["sh", "-c", "uvicorn asep.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
