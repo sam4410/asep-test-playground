@@ -26,6 +26,9 @@ class DatabaseConfig(BaseModel):
 class ExecutionConfig(BaseModel):
     require_human_approval: bool = True
     max_task_retries: int = 1
+    sandbox_type: str = "local"
+    max_self_healing_attempts: int = 3
+    validation_command: str = "pytest"
 
 
 class ArtifactConfig(BaseModel):
@@ -55,6 +58,9 @@ class Settings(BaseSettings):
     asep_llm_provider: str | None = Field(default=None, alias="ASEP_LLM_PROVIDER")
     asep_llm_model: str | None = Field(default=None, alias="ASEP_LLM_MODEL")
     asep_llm_api_base: str | None = Field(default=None, alias="ASEP_LLM_API_BASE")
+    asep_sandbox_type: str | None = Field(default=None, alias="ASEP_SANDBOX_TYPE")
+    asep_max_self_healing_attempts: int | None = Field(default=None, alias="ASEP_MAX_SELF_HEALING_ATTEMPTS")
+    asep_validation_command: str | None = Field(default=None, alias="ASEP_VALIDATION_COMMAND")
 
 
 def load_file_config(path: Path = Path("asep.yaml")) -> FileConfig:
@@ -86,5 +92,11 @@ def load_settings(config_path: Path = Path("asep.yaml")) -> FileConfig:
         file_config.llm.model = env_settings.asep_llm_model
     if env_settings.asep_llm_api_base:
         file_config.llm.api_base = env_settings.asep_llm_api_base
+    if env_settings.asep_sandbox_type:
+        file_config.execution.sandbox_type = env_settings.asep_sandbox_type
+    if env_settings.asep_max_self_healing_attempts is not None:
+        file_config.execution.max_self_healing_attempts = env_settings.asep_max_self_healing_attempts
+    if env_settings.asep_validation_command:
+        file_config.execution.validation_command = env_settings.asep_validation_command
 
     return file_config

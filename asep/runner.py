@@ -160,6 +160,58 @@ class TaskRunner:
             result = agent.run(context)
             
             if result.status == AgentResultStatus.success:
+                # Run self-healing if this is a coding task with a diff patch
+                patch_artifact = next((p for p in result.artifacts if p.endswith(".diff")), None)
+                if patch_artifact and task.owner in ("coding_agent", "backend_coding_agent", "frontend_coding_agent", "database_coding_agent"):
+                    try:
+                        patch_path = Path(self.workspace_path) / patch_artifact
+                        if patch_path.exists():
+                            patch_content = patch_path.read_text(encoding="utf-8")
+                            
+                            from asep.agents.debugging import SelfHealingAgent
+                            healer = SelfHealingAgent()
+                            
+                            event_repo.publish(
+                                "SELF_HEALING_STARTED",
+                                source="runner",
+                                payload={"task_id": task.id, "patch": patch_artifact},
+                                run_id=run.id
+                            )
+                            session.commit()
+                            
+                            max_attempts = self.settings.execution.max_self_healing_attempts
+                            val_cmd = self.settings.execution.validation_command
+                            
+                            healed_success, final_patch, report_content = healer.heal_task(
+                                context=context,
+                                original_patch=patch_content,
+                                test_cmd=val_cmd,
+                                max_attempts=max_attempts
+                            )
+                            
+                            # Save final patch
+                            patch_path.write_text(final_patch, encoding="utf-8")
+                            
+                            # Save report file
+                            report_filename = f"self_healing_{run.id}_{task.id}.md"
+                            report_path = Path(self.workspace_path) / ".asep" / "artifacts" / report_filename
+                            report_path.write_text(report_content, encoding="utf-8")
+                            
+                            rel_report_path = f".asep/artifacts/{report_filename}"
+                            if rel_report_path not in result.artifacts:
+                                result.artifacts.append(rel_report_path)
+                                
+                            event_name = "SELF_HEALING_SUCCESS" if healed_success else "SELF_HEALING_FAILED"
+                            event_repo.publish(
+                                event_name,
+                                source="runner",
+                                payload={"task_id": task.id, "success": healed_success},
+                                run_id=run.id
+                            )
+                            session.commit()
+                    except Exception as she:
+                        logger.error(f"Error during self-healing orchestration: {she}", exc_info=True)
+
                 # Add agent result to DB
                 result_row = AgentResultModel(
                     run_id=run.id,
