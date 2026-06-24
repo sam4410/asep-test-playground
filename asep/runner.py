@@ -231,6 +231,16 @@ class TaskRunner:
                             logger.warning("GitHub token or repository config not found. Skipping PR creation.")
                     except Exception as pe:
                         logger.error(f"Failed to push git branch or create GitHub PR: {pe}", exc_info=True)
+                        try:
+                            event_repo.publish(
+                                "GIT_PUSH_FAILED",
+                                source="runner",
+                                payload={"error": str(pe)},
+                                run_id=run.id
+                            )
+                            session.commit()
+                        except Exception:
+                            pass
             return
 
         # Find ready tasks: status is PENDING or RETRY, and all dependencies are DONE
