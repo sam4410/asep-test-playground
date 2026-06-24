@@ -115,6 +115,31 @@ class TaskRunner:
                             session.commit()
                         except Exception:
                             pass
+                else:
+                    # Switch to existing run branch if not current. Recreate if missing locally.
+                    try:
+                        current = git_mgr.get_current_branch()
+                    except Exception:
+                        current = ""
+                    if current != run.git_branch:
+                        try:
+                            git_mgr.checkout_branch(run.git_branch)
+                        except Exception:
+                            try:
+                                logger.info(f"Local branch {run.git_branch} missing. Re-creating branch...")
+                                git_mgr.create_and_checkout_branch(run.git_branch)
+                            except Exception as re:
+                                logger.error(f"Failed to recreate run branch {run.git_branch}: {re}", exc_info=True)
+                                try:
+                                    event_repo.publish(
+                                        "GIT_BRANCH_FAILED",
+                                        source="runner",
+                                        payload={"error": f"Failed to switch or recreate local branch: {re}"},
+                                        run_id=run.id
+                                    )
+                                    session.commit()
+                                except Exception:
+                                    pass
             else:
                 try:
                     event_repo.publish(
@@ -182,7 +207,11 @@ class TaskRunner:
                     try:
                         from asep.tools.git import GitManager, GitHubClient
                         git_mgr = GitManager(self.workspace_path)
-                        git_mgr.checkout_branch(run.git_branch)
+                        try:
+                            git_mgr.checkout_branch(run.git_branch)
+                        except Exception:
+                            logger.info(f"Local branch {run.git_branch} missing at completion. Re-creating branch...")
+                            git_mgr.create_and_checkout_branch(run.git_branch)
 
                         token = self.settings.git.github_token
                         repo = self.settings.git.github_repo
