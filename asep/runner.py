@@ -57,6 +57,21 @@ class TaskRunner:
         if self.settings.git.enabled:
             from asep.tools.git import GitManager
             git_mgr = GitManager(self.workspace_path)
+            
+            # Ensure it is a git repository
+            if not git_mgr.is_git_repository():
+                try:
+                    logger.info("Workspace is not a git repository. Initializing git...")
+                    git_mgr.run_git_cmd(["init"])
+                    
+                    token = self.settings.git.github_token
+                    repo = self.settings.git.github_repo
+                    if token and repo:
+                        remote_url = f"https://x-access-token:{token}@github.com/{repo}.git"
+                        git_mgr.set_remote_url("origin", remote_url)
+                except Exception as ie:
+                    logger.error(f"Failed to initialize git repository: {ie}", exc_info=True)
+
             if git_mgr.is_git_repository():
                 if not run.git_branch:
                     run_short_id = run.id[:8] if len(run.id) > 8 else run.id
@@ -80,8 +95,6 @@ class TaskRunner:
                         session.commit()
                     except Exception as ge:
                         logger.error(f"Failed to initialize git branch for run {run.id}: {ge}", exc_info=True)
-            else:
-                logger.warning(f"Git integration is enabled but workspace at {self.workspace_path} is not a git repository.")
 
         # Get all tasks for this run
         tasks = task_repo.list_for_run(run.id)

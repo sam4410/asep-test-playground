@@ -96,8 +96,8 @@ def list_runs() -> list[dict]:
                 "status": r.status,
                 "git_branch": r.git_branch,
                 "github_pr_url": r.github_pr_url,
-                "created_at": r.created_at.isoformat() if r.created_at else None,
-                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+                "created_at": f"{r.created_at.isoformat()}Z" if r.created_at else None,
+                "updated_at": f"{r.updated_at.isoformat()}Z" if r.updated_at else None,
             }
             for r in runs
         ]
@@ -115,8 +115,8 @@ def get_run(run_id: str) -> dict:
             "status": run.status,
             "git_branch": run.git_branch,
             "github_pr_url": run.github_pr_url,
-            "created_at": run.created_at.isoformat() if run.created_at else None,
-            "updated_at": run.updated_at.isoformat() if run.updated_at else None,
+            "created_at": f"{run.created_at.isoformat()}Z" if run.created_at else None,
+            "updated_at": f"{run.updated_at.isoformat()}Z" if run.updated_at else None,
         }
 
 
@@ -145,8 +145,8 @@ def get_run_tasks(run_id: str) -> list[dict]:
                 "status": t.status,
                 "retry_count": t.retry_count,
                 "dependencies": dependencies[t.id],
-                "created_at": t.created_at.isoformat() if t.created_at else None,
-                "updated_at": t.updated_at.isoformat() if t.updated_at else None,
+                "created_at": f"{t.created_at.isoformat()}Z" if t.created_at else None,
+                "updated_at": f"{t.updated_at.isoformat()}Z" if t.updated_at else None,
             }
             for t in tasks
         ]
@@ -165,7 +165,7 @@ def get_run_memory(run_id: str) -> list[dict]:
                 "key": m.key,
                 "value": m.value_json,
                 "source": m.source,
-                "created_at": m.created_at.isoformat() if m.created_at else None,
+                "created_at": f"{m.created_at.isoformat()}Z" if m.created_at else None,
             }
             for m in records
         ]
@@ -183,7 +183,7 @@ def get_run_events(run_id: str) -> list[dict]:
                 "type": e.type,
                 "payload": e.payload,
                 "source": e.source,
-                "created_at": e.created_at.isoformat() if e.created_at else None,
+                "created_at": f"{e.created_at.isoformat()}Z" if e.created_at else None,
             }
             for e in events
         ]
@@ -304,7 +304,7 @@ def get_run_results(run_id: str) -> list[dict]:
                 "status": r.status,
                 "summary": r.summary,
                 "artifacts": r.artifacts,
-                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "created_at": f"{r.created_at.isoformat()}Z" if r.created_at else None,
             }
             for r in results
         ]
