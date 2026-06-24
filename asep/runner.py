@@ -140,12 +140,18 @@ class TaskRunner:
                         git_mgr = GitManager(self.workspace_path)
                         git_mgr.checkout_branch(run.git_branch)
 
-                        logger.info(f"Pushing branch {run.git_branch} to origin...")
-                        git_mgr.push_branch(run.git_branch, remote="origin")
-
                         token = self.settings.git.github_token
                         repo = self.settings.git.github_repo
                         base = self.settings.git.base_branch or "main"
+
+                        if token and repo:
+                            # Configure authenticated remote URL for the target repository
+                            remote_url = f"https://x-access-token:{token}@github.com/{repo}.git"
+                            logger.info(f"Setting remote 'origin' URL to {repo} for push...")
+                            git_mgr.set_remote_url("origin", remote_url)
+
+                        logger.info(f"Pushing branch {run.git_branch} to origin...")
+                        git_mgr.push_branch(run.git_branch, remote="origin")
 
                         if token and repo:
                             logger.info(f"Creating GitHub Pull Request for repo {repo} (head: {run.git_branch}, base: {base})...")

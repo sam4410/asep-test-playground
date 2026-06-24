@@ -83,6 +83,13 @@ class GitManager:
             args.append("--force")
         self.run_git_cmd(args)
 
+    def set_remote_url(self, remote_name: str, url: str) -> None:
+        """Sets or adds a remote repository URL."""
+        try:
+            self.run_git_cmd(["remote", "set-url", remote_name, url])
+        except Exception:
+            self.run_git_cmd(["remote", "add", remote_name, url])
+
 
 class GitHubClient:
     @staticmethod
