@@ -14,7 +14,7 @@ COPY alembic.ini ./
 COPY static ./static
 
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir .
+    && pip install --no-cache-dir .[dev]
 
 RUN mkdir -p /app/.asep/artifacts \
     && chown -R asep:asep /app
