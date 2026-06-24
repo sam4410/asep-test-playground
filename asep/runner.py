@@ -71,6 +71,16 @@ class TaskRunner:
                         git_mgr.set_remote_url("origin", remote_url)
                 except Exception as ie:
                     logger.error(f"Failed to initialize git repository: {ie}", exc_info=True)
+                    try:
+                        event_repo.publish(
+                            "GIT_INIT_FAILED",
+                            source="runner",
+                            payload={"error": str(ie)},
+                            run_id=run.id
+                        )
+                        session.commit()
+                    except Exception:
+                        pass
 
             if git_mgr.is_git_repository():
                 if not run.git_branch:
@@ -95,6 +105,27 @@ class TaskRunner:
                         session.commit()
                     except Exception as ge:
                         logger.error(f"Failed to initialize git branch for run {run.id}: {ge}", exc_info=True)
+                        try:
+                            event_repo.publish(
+                                "GIT_BRANCH_FAILED",
+                                source="runner",
+                                payload={"error": str(ge)},
+                                run_id=run.id
+                            )
+                            session.commit()
+                        except Exception:
+                            pass
+            else:
+                try:
+                    event_repo.publish(
+                        "GIT_NOT_SUPPORTED",
+                        source="runner",
+                        payload={"reason": "Workspace is not a git repository and initialization failed."},
+                        run_id=run.id
+                    )
+                    session.commit()
+                except Exception:
+                    pass
 
         # Get all tasks for this run
         tasks = task_repo.list_for_run(run.id)
