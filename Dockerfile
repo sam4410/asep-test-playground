@@ -12,6 +12,7 @@ COPY asep ./asep
 COPY migrations ./migrations
 COPY alembic.ini ./
 COPY static ./static
+COPY tests ./tests
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .[dev]
