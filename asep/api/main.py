@@ -94,6 +94,8 @@ def list_runs() -> list[dict]:
                 "id": r.id,
                 "goal": r.goal,
                 "status": r.status,
+                "git_branch": r.git_branch,
+                "github_pr_url": r.github_pr_url,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
                 "updated_at": r.updated_at.isoformat() if r.updated_at else None,
             }
@@ -111,6 +113,8 @@ def get_run(run_id: str) -> dict:
             "id": run.id,
             "goal": run.goal,
             "status": run.status,
+            "git_branch": run.git_branch,
+            "github_pr_url": run.github_pr_url,
             "created_at": run.created_at.isoformat() if run.created_at else None,
             "updated_at": run.updated_at.isoformat() if run.updated_at else None,
         }
@@ -261,6 +265,27 @@ def approve_task(task_id: str, request: ApproveRequest = ApproveRequest()) -> di
         success = apply_patch(workspace, target_file, patch_content)
         if not success:
             raise HTTPException(status_code=500, detail="Failed to apply patch to workspace")
+
+        # Stage and commit if git is enabled
+        settings = load_settings()
+        if settings.git.enabled:
+            from asep.db.models import RunModel
+            run = session.execute(
+                select(RunModel).where(RunModel.id == task.run_id)
+            ).scalar_one_or_none()
+            if run and run.git_branch:
+                try:
+                    from asep.tools.git import commit_task_patch
+                    commit_task_patch(
+                        workspace_path=workspace,
+                        run_branch=run.git_branch,
+                        target_file=target_file,
+                        commit_msg=f"feat({task.owner}): {task.title}"
+                    )
+                except Exception as ge:
+                    # Log but do not block task completion
+                    import logging
+                    logging.getLogger("asep.api").error(f"Git commit failed on task approval: {ge}", exc_info=True)
             
         task.status = "DONE"
         EventRepository(session).publish("REVIEW_COMPLETED", source="api_reviewer", payload={"task_id": task.id, "action": "approved"}, run_id=task.run_id)

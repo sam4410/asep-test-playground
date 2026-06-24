@@ -62,7 +62,11 @@
 
                 <div class="selected-run-meta">
                     <h3 id="selected-run-goal">Select or start a run to monitor execution...</h3>
-                    <p class="run-id-label" id="selected-run-id"></p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap;">
+                        <span class="run-id-label" id="selected-run-id" style="margin-top: 0;"></span>
+                        <span class="badge badge-git" id="selected-run-git" style="display: none;"></span>
+                        <a id="selected-run-pr" href="#" target="_blank" class="badge badge-done" style="display: none; text-decoration: none; text-transform: none;">PR Created ↗</a>
+                    </div>
                 </div>
 
                 <div class="task-dag-container">

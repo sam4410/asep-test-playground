@@ -35,12 +35,20 @@ class ArtifactConfig(BaseModel):
     path: Path = Path(".asep/artifacts")
 
 
+class GitConfig(BaseModel):
+    enabled: bool = False
+    github_token: str | None = None
+    github_repo: str | None = None
+    base_branch: str = "main"
+
+
 class FileConfig(BaseModel):
     project: ProjectConfig = Field(default_factory=ProjectConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
     execution: ExecutionConfig = Field(default_factory=ExecutionConfig)
     artifacts: ArtifactConfig = Field(default_factory=ArtifactConfig)
+    git: GitConfig = Field(default_factory=GitConfig)
 
 
 class Settings(BaseSettings):
@@ -61,6 +69,10 @@ class Settings(BaseSettings):
     asep_sandbox_type: str | None = Field(default=None, alias="ASEP_SANDBOX_TYPE")
     asep_max_self_healing_attempts: int | None = Field(default=None, alias="ASEP_MAX_SELF_HEALING_ATTEMPTS")
     asep_validation_command: str | None = Field(default=None, alias="ASEP_VALIDATION_COMMAND")
+    asep_git_enabled: bool | None = Field(default=None, alias="ASEP_GIT_ENABLED")
+    asep_github_token: str | None = Field(default=None, alias="ASEP_GITHUB_TOKEN")
+    asep_github_repo: str | None = Field(default=None, alias="ASEP_GITHUB_REPO")
+    asep_git_base_branch: str | None = Field(default=None, alias="ASEP_GIT_BASE_BRANCH")
 
 
 def load_file_config(path: Path = Path("asep.yaml")) -> FileConfig:
@@ -98,5 +110,13 @@ def load_settings(config_path: Path = Path("asep.yaml")) -> FileConfig:
         file_config.execution.max_self_healing_attempts = env_settings.asep_max_self_healing_attempts
     if env_settings.asep_validation_command:
         file_config.execution.validation_command = env_settings.asep_validation_command
+    if env_settings.asep_git_enabled is not None:
+        file_config.git.enabled = env_settings.asep_git_enabled
+    if env_settings.asep_github_token:
+        file_config.git.github_token = env_settings.asep_github_token
+    if env_settings.asep_github_repo:
+        file_config.git.github_repo = env_settings.asep_github_repo
+    if env_settings.asep_git_base_branch:
+        file_config.git.base_branch = env_settings.asep_git_base_branch
 
     return file_config

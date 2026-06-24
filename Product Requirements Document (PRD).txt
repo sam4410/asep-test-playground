@@ -45,29 +45,18 @@ ASEP aims to replicate this engineering process using autonomous agents.
 
 3. Goals
 Primary Goals
-Autonomous Software Development
-
-Transform high-level requirements into production-ready systems.
-
-Parallel Execution
-
-Enable multiple teams to work concurrently.
-
-Self-Healing
-
-Automatically debug and fix failures.
-
-Continuous Quality Assurance
-
-Perform code reviews, testing, security checks and validations.
-
-Persistent Memory
-
-Maintain project knowledge across sessions.
-
-Dynamic Planning
-
-Allow agents to re-plan based on runtime events.
+- Autonomous Software Development
+- Transform high-level requirements into production-ready systems.
+- Parallel Execution
+- Enable multiple teams to work concurrently.
+- Self-Healing
+- Automatically debug and fix failures.
+- Continuous Quality Assurance
+- Perform code reviews, testing, security checks and validations.
+- Persistent Memory
+- Maintain project knowledge across sessions.
+- Dynamic Planning
+- Allow agents to re-plan based on runtime events.
 
 4. Non Goals
 
@@ -80,54 +69,38 @@ Execute production deployments without approval (configurable).
 Guarantee correctness without review.
 
 5. Target Users
-Individual Developers
 
-Build MVPs faster.
-
-Engineering Teams
-
-Delegate repetitive implementation tasks.
-
-Startups
-
-Function as an autonomous engineering team.
-
-Enterprises
-
-Accelerate SDLC.
-
-AI Agent Researchers
-
-Experiment with multi-agent coordination.
+- Individual Developers
+- Build MVPs faster.
+- Engineering Teams
+- Delegate repetitive implementation tasks.
+- Startups
+- Function as an autonomous engineering team.
+- Enterprises
+- Accelerate SDLC.
+- AI Agent Researchers
+- Experiment with multi-agent coordination.
 
 6. Core Principles
-Hierarchical Organization
 
-Agents organized as teams.
-
-Not flat 50-agent chaos.
-
-Event Driven Coordination
-
-Agents wake up based on events.
-
-Shared Memory
-
-All teams collaborate through common memory.
+- Hierarchical Organization
+- Agents organized as teams.
+- Not flat 50-agent chaos.
+- Event Driven Coordination
+- Agents wake up based on events.
+- Shared Memory
+- All teams collaborate through common memory.
 
 Dynamic Branching
 
-Plans evolve during execution.
-
-Self-Correction
-
-Failures spawn debugging workflows.
-
-Human-in-the-Loop
-
-Humans remain final authority.
+- Plans evolve during execution.
+- Self-Correction
+- Failures spawn debugging workflows.
+- Human-in-the-Loop
+- Humans remain final authority.
 
 7. High-Level Architecture
+
 Human
   │
 Product Manager Agent
@@ -155,56 +128,63 @@ Execution Environment
 Git Repository
   │
 Deployment
+
 8. Agent Organization
+
 8.1 Planning Team
+
 Product Manager Agent
 
 Responsibilities:
 
-Understand requirements
-Clarify goals
-Define acceptance criteria
+- Understand requirements
+- Clarify goals
+- Define acceptance criteria
 
 Inputs:
 
-User prompts
+- User prompts
 
 Outputs:
 
 features:
 constraints:
 acceptance_criteria:
+
 Planner Agent
 
 Responsibilities:
 
-Break work into DAGs
-Generate tasks
+- Break work into DAGs
+- Generate tasks
 
 Outputs:
 
 Task:
 dependencies:
 priority:
+
 Architect Agent
 
 Responsibilities:
 
-Select frameworks
-Folder structure
-Coding conventions
+- Select frameworks
+- Folder structure
+- Coding conventions
 
 Outputs:
 
 backend:
 frontend:
 database:
+
 Estimation Agent
 
 Responsibilities:
 
-Complexity scoring
-Resource allocation
+- Complexity scoring
+- Resource allocation
+
 8.2 Backend Team
 API Agent
 
@@ -247,6 +227,7 @@ Refactoring Agent
 Code improvements.
 
 8.3 Frontend Team
+
 UI Component Agent
 
 React components.
@@ -280,6 +261,7 @@ UX Review Agent
 Consistency checks.
 
 8.4 Database Team
+
 Schema Agent
 
 Normalization.
@@ -465,6 +447,7 @@ Release history.
 Release Notes Agent
 
 Version summaries.
+
 
 9. Shared Memory System
 

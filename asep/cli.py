@@ -135,6 +135,27 @@ def approve(task_id: Annotated[str | None, typer.Argument(help="Task ID to appro
         # Apply patch
         success = apply_patch(workspace, target_file, patch_content)
         if success:
+            # Stage and commit if git is enabled
+            from asep.config import load_settings
+            from sqlalchemy import select
+            settings = load_settings()
+            if settings.git.enabled:
+                from asep.db.models import RunModel
+                run = session.execute(
+                    select(RunModel).where(RunModel.id == task.run_id)
+                ).scalar_one_or_none()
+                if run and run.git_branch:
+                    try:
+                        from asep.tools.git import commit_task_patch
+                        commit_task_patch(
+                            workspace_path=workspace,
+                            run_branch=run.git_branch,
+                            target_file=target_file,
+                            commit_msg=f"feat({task.owner}): {task.title}"
+                        )
+                    except Exception as ge:
+                        typer.echo(f"Warning: Git commit failed on task approval: {ge}")
+
             task.status = "DONE"
             # Publish event
             EventRepository(session).publish("REVIEW_COMPLETED", source="human_reviewer", payload={"task_id": task.id, "action": "approved"}, run_id=task.run_id)

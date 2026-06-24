@@ -348,6 +348,7 @@ body {
 .badge-done { background-color: rgba(16, 185, 129, 0.15); color: var(--status-done); border: 1px solid rgba(16, 185, 129, 0.25); }
 .badge-failed { background-color: rgba(239, 68, 68, 0.15); color: var(--status-failed); border: 1px solid rgba(239, 68, 68, 0.25); }
 .badge-blocked { background-color: rgba(217, 119, 6, 0.15); color: var(--status-blocked); border: 1px solid rgba(217, 119, 6, 0.25); }
+.badge-git { background-color: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.25); text-transform: none; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; }
 
 /* Selected Run Meta (Column 2) */
 .selected-run-meta {

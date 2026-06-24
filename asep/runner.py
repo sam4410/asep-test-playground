@@ -53,6 +53,36 @@ class TaskRunner:
         task_repo = TaskRepository(session)
         event_repo = EventRepository(session)
 
+        # Initialize Git branch if enabled and not already created
+        if self.settings.git.enabled:
+            from asep.tools.git import GitManager
+            git_mgr = GitManager(self.workspace_path)
+            if git_mgr.is_git_repository():
+                if not run.git_branch:
+                    run_short_id = run.id[:8] if len(run.id) > 8 else run.id
+                    branch_name = f"asep/run-{run_short_id}"
+                    try:
+                        base_branch = self.settings.git.base_branch or "main"
+                        try:
+                            git_mgr.checkout_branch(base_branch)
+                        except Exception:
+                            pass
+                        git_mgr.create_and_checkout_branch(branch_name)
+                        run.git_branch = branch_name
+                        session.commit()
+                        logger.info(f"Created and checked out git branch {branch_name} for run {run.id}")
+                        event_repo.publish(
+                            "GIT_BRANCH_CREATED",
+                            source="runner",
+                            payload={"branch_name": branch_name},
+                            run_id=run.id
+                        )
+                        session.commit()
+                    except Exception as ge:
+                        logger.error(f"Failed to initialize git branch for run {run.id}: {ge}", exc_info=True)
+            else:
+                logger.warning(f"Git integration is enabled but workspace at {self.workspace_path} is not a git repository.")
+
         # Get all tasks for this run
         tasks = task_repo.list_for_run(run.id)
         if not tasks:
@@ -101,6 +131,56 @@ class TaskRunner:
             if run.status != "DONE":
                 run_repo.update_status(run.id, "DONE")
                 event_repo.publish("WORKFLOW_COMPLETED", source="runner", payload={"run_id": run.id}, run_id=run.id)
+                session.commit()
+
+                # Push branch and raise PR if git is enabled
+                if self.settings.git.enabled and run.git_branch and not run.github_pr_url:
+                    try:
+                        from asep.tools.git import GitManager, GitHubClient
+                        git_mgr = GitManager(self.workspace_path)
+                        git_mgr.checkout_branch(run.git_branch)
+
+                        logger.info(f"Pushing branch {run.git_branch} to origin...")
+                        git_mgr.push_branch(run.git_branch, remote="origin")
+
+                        token = self.settings.git.github_token
+                        repo = self.settings.git.github_repo
+                        base = self.settings.git.base_branch or "main"
+
+                        if token and repo:
+                            logger.info(f"Creating GitHub Pull Request for repo {repo} (head: {run.git_branch}, base: {base})...")
+                            pr_title = f"ASEP: {run.goal}"
+                            pr_body = (
+                                f"### Autonomous Software Engineering Platform (ASEP) PR\n\n"
+                                f"**Goal**: {run.goal}\n\n"
+                                f"#### Completed Tasks:\n"
+                                + "\n".join([f"- [x] **{t.title}** ({t.owner})" for t in tasks])
+                            )
+
+                            pr_url = GitHubClient.create_pull_request(
+                                repo=repo,
+                                head=run.git_branch,
+                                base=base,
+                                title=pr_title,
+                                body=pr_body,
+                                token=token
+                            )
+
+                            if pr_url:
+                                run.github_pr_url = pr_url
+                                session.commit()
+                                logger.info(f"GitHub PR created successfully: {pr_url}")
+                                event_repo.publish(
+                                    "PULL_REQUEST_CREATED",
+                                    source="runner",
+                                    payload={"pr_url": pr_url},
+                                    run_id=run.id
+                                )
+                                session.commit()
+                        else:
+                            logger.warning("GitHub token or repository config not found. Skipping PR creation.")
+                    except Exception as pe:
+                        logger.error(f"Failed to push git branch or create GitHub PR: {pe}", exc_info=True)
             return
 
         # Find ready tasks: status is PENDING or RETRY, and all dependencies are DONE

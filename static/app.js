@@ -164,6 +164,24 @@ async function pollRunData() {
         // Update header & status card
         document.getElementById("selected-run-goal").textContent = run.goal;
         document.getElementById("selected-run-id").textContent = `Run ID: ${run.id}`;
+
+        // Git branch badge
+        const gitBadge = document.getElementById("selected-run-git");
+        if (run.git_branch) {
+            gitBadge.textContent = `git: ${run.git_branch}`;
+            gitBadge.style.display = "inline-block";
+        } else {
+            gitBadge.style.display = "none";
+        }
+
+        // GitHub PR hyperlink
+        const prLink = document.getElementById("selected-run-pr");
+        if (run.github_pr_url) {
+            prLink.href = run.github_pr_url;
+            prLink.style.display = "inline-block";
+        } else {
+            prLink.style.display = "none";
+        }
         
         const statusBadge = document.getElementById("selected-run-status");
         statusBadge.textContent = run.status;
