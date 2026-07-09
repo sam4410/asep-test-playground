@@ -1,8 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.api.routers.links import router
-from datetime import datetime
-import psycopg2
 from unittest.mock import patch, MagicMock
 
 client = TestClient(router)
@@ -51,4 +49,19 @@ def test_create_link_custom_slug_too_short_integration(mock_connect):
 @patch('app.api.routers.links.psycopg2.connect')
 def test_create_link_custom_slug_too_long_integration(mock_connect):
     response = client.post("/api/v1/links", json={"url": "http://example.com", "custom_slug": "a" * 33})
+    assert response.status_code == 422  # Unprocessable Entity
+
+@patch('app.api.routers.links.psycopg2.connect')
+def test_create_link_custom_slug_with_special_characters_integration(mock_connect):
+    response = client.post("/api/v1/links", json={"url": "http://example.com", "custom_slug": "invalid_slug!"})
+    assert response.status_code == 422  # Unprocessable Entity
+
+@patch('app.api.routers.links.psycopg2.connect')
+def test_create_link_empty_url_integration(mock_connect):
+    response = client.post("/api/v1/links", json={"url": "", "custom_slug": "validslug"})
+    assert response.status_code == 422  # Unprocessable Entity
+
+@patch('app.api.routers.links.psycopg2.connect')
+def test_create_link_missing_url_integration(mock_connect):
+    response = client.post("/api/v1/links", json={"custom_slug": "validslug"})
     assert response.status_code == 422  # Unprocessable Entity
