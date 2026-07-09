@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from app.routers.links import router, generate_random_slug, insert_link
+from routers.links import router, generate_random_slug, insert_link
 from pydantic import ValidationError
 from unittest.mock import patch, MagicMock
 from datetime import datetime
@@ -37,7 +37,7 @@ def test_generate_random_slug():
     assert len(slug) == 8
     assert slug.isalnum()
 
-@patch('app.routers.links.psycopg2.connect')
+@patch('routers.links.psycopg2.connect')
 def test_insert_link_success(mock_connect):
     mock_cursor = MagicMock()
     mock_connect.return_value.cursor.return_value = mock_cursor
@@ -47,7 +47,7 @@ def test_insert_link_success(mock_connect):
     assert link_id == 1
     mock_cursor.execute.assert_called_once()
 
-@patch('app.routers.links.psycopg2.connect')
+@patch('routers.links.psycopg2.connect')
 def test_insert_link_slug_conflict(mock_connect):
     mock_cursor = MagicMock()
     mock_connect.return_value.cursor.return_value = mock_cursor
@@ -56,3 +56,7 @@ def test_insert_link_slug_conflict(mock_connect):
     with pytest.raises(Exception) as excinfo:
         insert_link("http://example.com", "custom123")
     assert excinfo.value.status_code == 409  # Conflict
+
+def test_generate_random_slug_edge_case():
+    slug = generate_random_slug(0)  # Edge case: length 0
+    assert slug == ""  # Expecting an empty string
