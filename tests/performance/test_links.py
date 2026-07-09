@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from your_project_name.routers.links import router  # Replace 'your_project_name' with the actual package name
+from your_actual_package_name.routers.links import router  # Adjusted to the correct package name
 
 client = TestClient(router)
 
