@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, constr
 import random
 import string
 import psycopg2
@@ -10,7 +10,7 @@ router = APIRouter()
 
 class LinkCreate(BaseModel):
     url: HttpUrl
-    custom_slug: str = Query(None, min_length=3, max_length=32)
+    custom_slug: constr(min_length=3, max_length=32) = Query(None)
 
 def generate_random_slug(length=8):
     characters = string.ascii_letters + string.digits
@@ -40,6 +40,11 @@ async def create_link(link: LinkCreate):
         slug = link.custom_slug
     else:
         slug = generate_random_slug()
+
+    # Check for slug uniqueness before inserting
+    existing_slug = insert_link(link.url, slug)
+    if existing_slug is None:
+        raise HTTPException(status_code=409, detail="Slug already exists")
 
     link_id = insert_link(link.url, slug)
     return {"id": link_id, "original_url": link.url, "slug": slug, "created_at": datetime.utcnow()}
