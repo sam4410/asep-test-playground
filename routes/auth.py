@@ -1,14 +1,20 @@
-from flask import Blueprint, request, redirect, url_for, session, flash, render_template
+def load_config(app):
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///default.db')  # Default to SQLite
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()  # Create database tables if they don't existfrom flask import Blueprint, request, redirect, url_for, session, flash, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from your_application import db
 from your_application.models import User
-
+import os
 auth_bp = Blueprint('auth', __name__)
+    app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret_key')  # Use environment variable in production
 
-@auth_bp.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
+    @app.before_request
+    def require_login():
+        if 'user_id' not in session and request.endpoint != 'auth.login' and request.endpoint != 'auth.signup':
         password = request.form['password']
         if User.query.filter_by(username=username).first():
             flash('Username already exists.')
