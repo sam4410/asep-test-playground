@@ -1,4 +1,4 @@
-from flask import Blueprint, request, flash, render_template
+from flask import Blueprint, request, flash, render_template, session, redirect, url_for
 from your_application import db
 from your_application.models import User, Invoice
 from datetime import datetime, timedelta
@@ -48,3 +48,11 @@ class Invoice(db.Model):
 
     def __repr__(self):
         return f'<Invoice {self.id} for {self.client_email}>'
+
+    def send_reminder_email(self):
+        # Placeholder for actual email sending logic
+        pass
+
+    def mark_as_reminded(self):
+        self.reminder_sent = True
+        db.session.commit()
