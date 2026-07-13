@@ -1,10 +1,25 @@
-def load_config(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///default.db')  # Default to SQLite
+from flask import Blueprint, request, redirect, url_for, session, flash, render_template
+from werkzeug.security import generate_password_hash, check_password_hash
+from your_application import db
+from your_application.models import User
+import os
+auth_bp = Blueprint('auth', __name__)
+def init_app(app):
+    app.register_blueprint(auth_bp)
+    app.secret_key = os.environ.get('SECRET_KEY', 'your_default_secret_key')  # Use environment variable in production
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    db.init_app(app)
-    with app.app_context():
-        db.create_all()  # Create database tables if they don't existfrom flask import Blueprint, request, redirect, url_for, session, flash, render_template
+   
+    @app.before_request
+    def require_login():
+        if 'user_id' not in session and request.endpoint != 'auth.login' and request.endpoint != 'auth.signup':
+            return redirect(url_for('auth.login'))
+    @app.route('/dashboard')
+    def dashboard():
+        return render_template('dashboard.html')  # Placeholder for user dashboard
+   
+    @app.route('/')
+    def home():
+        return redirect(url_for('auth.login'))        db.create_all()  # Create database tables if they don't existfrom flask import Blueprint, request, redirect, url_for, session, flash, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from your_application import db
 from your_application.models import User
