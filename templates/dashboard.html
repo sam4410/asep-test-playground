@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Dashboard</title>
+<style>
+  body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:0 16px}
+  nav{display:flex;gap:16px;margin-bottom:32px}
+  nav a{color:#1a73e8;text-decoration:none}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .card{border:1px solid #e0e0e0;border-radius:8px;padding:20px;text-align:center}
+  .card h2{font-size:2rem;margin:8px 0;color:#1a73e8}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #e0e0e0}
+  th{background:#f5f5f5}
+  .flash{background:#d4edda;padding:8px 12px;border-radius:4px;margin-bottom:16px}
+</style>
+</head>
+<body>
+  <nav>
+    <strong>App</strong>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/feature">New Order</a>
+    <a href="/logout">Log out</a>
+  </nav>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<div class="flash">{{ messages[-1] }}</div>{% endif %}
+  {% endwith %}
+  <h1>Dashboard</h1>
+  <div class="stats">
+    <div class="card"><p>Total Orders</p><h2>{{ total_orders }}</h2></div>
+    <div class="card"><p>Pending Payments</p><h2>{{ pending_payments }}</h2></div>
+    <div class="card"><p>Materials in Stock</p><h2>{{ total_materials }}</h2></div>
+  </div>
+  <h2>Your Orders</h2>
+  {% if user_orders %}
+  <table>
+    <thead><tr><th>#</th><th>Description</th><th>Status</th><th>Payment</th></tr></thead>
+    <tbody>
+    {% for order in user_orders %}
+      <tr><td>{{ order.id }}</td><td>{{ order.description }}</td><td>{{ order.status }}</td><td>{{ order.payment_status }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No orders yet. <a href="/feature">Create one</a>.</p>
+  {% endif %}
+</body>
+</html>
