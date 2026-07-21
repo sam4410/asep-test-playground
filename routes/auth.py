@@ -29,6 +29,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['username'] = user.username
+            session['user_id'] = user.id
             flash('Login successful!')
             return redirect(url_for('dashboard.dashboard'))  # Redirect to dashboard after login
         flash('Invalid username or password. Please try again.')
