@@ -6,7 +6,7 @@ feature_bp = Blueprint('feature', __name__)
 
 @feature_bp.route('/feature', methods=['GET', 'POST'])
 def feature():
-    if 'username' not in session:
+    if 'username' not in session or 'user_id' not in session:
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':

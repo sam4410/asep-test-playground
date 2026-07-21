@@ -6,7 +6,7 @@ dashboard_bp = Blueprint('dashboard', __name__)
 
 @dashboard_bp.route('/dashboard')
 def dashboard():
-    if 'username' not in session:
+    if 'username' not in session or 'user_id' not in session:
         return redirect(url_for('auth.login'))
 
     user_orders = Order.query.filter_by(user_id=session['user_id']).all()
