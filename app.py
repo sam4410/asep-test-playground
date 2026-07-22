@@ -3,7 +3,7 @@ from flask import Flask, session
 from extensions import db
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__)    app = Flask(__name__)
     app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
