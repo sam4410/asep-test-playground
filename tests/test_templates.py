@@ -63,8 +63,7 @@ class TestTemplates(TestCase):
         self.assertIn(b'Order ID', response.data)
         self.assertIn(b'Customer', response.data)
         self.assertIn(b'Status', response.data)
-        self.assertIn(b'Date', response.data)
-class TestTemplates(TestCase):
+        self.assertIn(b'Date', response.data)class TestTemplates(TestCase):
     def create_app(self):
         app = Flask(__name__)
         app.secret_key = 'test_secret'
