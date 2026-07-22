@@ -1,8 +1,9 @@
 import pytest
 import sys
-sys.path.insert(0, '/path/to/your/flask/app')  # Adjust the path to your Flask app
+sys.path.insert(0, '')  # Ensure the root directory is in the path
 from flask import session
 from extensions import db
+from models.database import User, Order, Material
 from models.database import User, Order, Material
 def test_dashboard_redirects_when_not_logged_in(client):
     response = client.get('/dashboard')
@@ -38,10 +39,10 @@ def test_dashboard_displays_correct_data(client):
     # Test: Access the dashboard
     response = client.get('/dashboard')
     assert response.status_code == 200
+    assert b'Your App' in response.data  # Check for the app title in the response
     assert b'Total Orders' in response.data
     assert b'Pending Payments' in response.data
-    assert b'Materials in Stock' in response.data
-    assert b'Order 1' in response.data
+    assert b'Materials in Stock' in response.data    assert b'Order 1' in response.data
     assert b'Order 2' in response.data
 
 def test_dashboard_no_orders_or_materials(client):
