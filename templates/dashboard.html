@@ -1,129 +1,68 @@
-{% extends "base.html" %}
-
-{% block content %}
-<script src='https://cdn.tailwindcss.com'></script>
-<div class="max-w-7xl mx-auto mt-10">
-    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Total Orders</p>
-        <h2 class="text-2xl font-bold">{{ total_orders }}</h2>
-    </div>
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Pending Payments</p>
-        <h2 class="text-2xl font-bold">{{ pending_payments }}</h2>
-    </div>
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Materials in Stock</p>
-        <h2 class="text-2xl font-bold">{{ total_materials }}</h2>
-    </div>
-    </div>
-    <h2 class="text-2xl font-bold mt-6">Your Orders</h2>
-    {% if user_orders %}
-    <table class="min-w-full border-collapse border border-gray-200">
-        <thead>
-            <tr>
-                <th class="border border-gray-300 px-4 py-2">#</th>
-                <th class="border border-gray-300 px-4 py-2">Description</th>
-                <th class="border border-gray-300 px-4 py-2">Status</th>
-                <th class="border border-gray-300 px-4 py-2">Payment</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for order in user_orders %}
-            <tr>
-                <td class="border border-gray-300 px-4 py-2">{{ order.id }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.description }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.status }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.payment_status }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No orders yet. <a href="/feature" class="text-blue-500">Create one</a>.</p>
-    {% endif %}
-</div>
-{% endblock %}    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Total Orders</p>
-        <h2 class="text-2xl font-bold">{{ total_orders }}</h2>
-    </div>
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Pending Payments</p>
-        <h2 class="text-2xl font-bold">{{ pending_payments }}</h2>
-    </div>
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p class="text-lg">Materials in Stock</p>
-        <h2 class="text-2xl font-bold">{{ total_materials }}</h2>
-    </div>
-    </div>
-    <h2 class="text-2xl font-bold mt-6">Your Orders</h2>
-    {% if user_orders %}
-    <table class="min-w-full border-collapse border border-gray-200">
-        <thead>
-            <tr>
-                <th class="border border-gray-300 px-4 py-2">#</th>
-                <th class="border border-gray-300 px-4 py-2">Description</th>
-                <th class="border border-gray-300 px-4 py-2">Status</th>
-                <th class="border border-gray-300 px-4 py-2">Payment</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for order in user_orders %}
-            <tr>
-                <td class="border border-gray-300 px-4 py-2">{{ order.id }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.description }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.status }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ order.payment_status }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No orders yet. <a href="/feature" class="text-blue-500">Create one</a>.</p>
-    {% endif %}
-</div>
-{% endblock %}  nav{display:flex;gap:16px;margin-bottom:32px}
-  nav a{color:#1a73e8;text-decoration:none}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
-  .card{border:1px solid #e0e0e0;border-radius:8px;padding:20px;text-align:center}
-  .card h2{font-size:2rem;margin:8px 0;color:#1a73e8}
-  table{width:100%;border-collapse:collapse}
-  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #e0e0e0}
-  th{background:#f5f5f5}
-  .flash{background:#d4edda;padding:8px 12px;border-radius:4px;margin-bottom:16px}
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <nav>
-    <strong>App</strong>
-    <a href="/dashboard">Dashboard</a>
-    <a href="/feature">New Order</a>
-    <a href="/logout">Log out</a>
+<body class="bg-gray-50 text-gray-800">
+  <nav class="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-6 sticky top-0">
+    <span class="font-bold text-indigo-600 text-lg">OrderApp</span>
+    <a href="/dashboard" class="text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 pb-0.5">Dashboard</a>
+    <a href="/feature"   class="text-sm font-medium text-gray-700 hover:text-indigo-600">New Order</a>
+    <a href="/logout"    class="ml-auto text-sm text-gray-500 hover:text-gray-700">Log out</a>
   </nav>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}<div class="flash">{{ messages[-1] }}</div>{% endif %}
-  {% endwith %}
-  <h1>Dashboard</h1>
-  <div class="stats">
-    <div class="card"><p>Total Orders</p><h2>{{ total_orders }}</h2></div>
-    <div class="card"><p>Pending Payments</p><h2>{{ pending_payments }}</h2></div>
-    <div class="card"><p>Materials in Stock</p><h2>{{ total_materials }}</h2></div>
-  </div>
-  <h2>Your Orders</h2>
-  {% if user_orders %}
-  <table>
-    <thead><tr><th>#</th><th>Description</th><th>Status</th><th>Payment</th></tr></thead>
-    <tbody>
-    {% for order in user_orders %}
-      <tr><td>{{ order.id }}</td><td>{{ order.description }}</td><td>{{ order.status }}</td><td>{{ order.payment_status }}</td></tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p>No orders yet. <a href="/feature">Create one</a>.</p>
-  {% endif %}
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 px-4 py-3 mb-6 text-sm text-yellow-800">{{ messages[-1] }}</div>
+      {% endif %}
+    {% endwith %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+        <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold">Total Orders</p>
+        <p class="text-4xl font-bold text-indigo-600 mt-2">{{ total_orders }}</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+        <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold">Pending Payments</p>
+        <p class="text-4xl font-bold text-yellow-500 mt-2">{{ pending_payments }}</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+        <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold">Materials in Stock</p>
+        <p class="text-4xl font-bold text-green-600 mt-2">{{ total_materials }}</p>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Orders</h2>
+      {% if user_orders %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">#</th>
+              <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Description</th>
+              <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Status</th>
+              <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Payment</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for order in user_orders %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-gray-500">{{ order.id }}</td>
+              <td class="px-4 py-3 font-medium">{{ order.description }}</td>
+              <td class="px-4 py-3">{{ order.status }}</td>
+              <td class="px-4 py-3">{{ order.payment_status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-gray-500 text-sm">No orders yet. <a href="/feature" class="text-indigo-600 hover:underline">Create your first order</a>.</p>
+      {% endif %}
+    </div>
+  </main>
 </body>
 </html>
