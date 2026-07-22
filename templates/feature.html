@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <nav class="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-6 sticky top-0">
+    <span class="font-bold text-indigo-600 text-lg">OrderApp</span>
+    <a href="/dashboard" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Dashboard</a>
+    <a href="/feature"   class="text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 pb-0.5">New Order</a>
+    <a href="/logout"    class="ml-auto text-sm text-gray-500 hover:text-gray-700">Log out</a>
+  </nav>
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 px-4 py-3 mb-6 text-sm text-yellow-800">{{ messages[-1] }}</div>
+      {% endif %}
+    {% endwith %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">New Order</h1>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <form method="POST" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Order Description</label>
+          <input type="text" name="description" required
+                 class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        {% if materials %}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Materials</label>
+          {% for material in materials %}
+          <div class="flex gap-3 items-center mb-2">
+            <select name="materials"
+                    class="border border-gray-300 rounded-md px-3 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="{{ material.id }}">{{ material.name }}</option>
+            </select>
+            <input type="number" name="quantities" value="1" min="1"
+                   class="border border-gray-300 rounded-md px-3 py-2 w-24 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500 italic">No materials in stock.</p>
+        {% endif %}
+        <button type="submit"
+                class="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">
+          Place Order
+        </button>
+      </form>
+    </div>
+    <p class="mt-4 text-sm"><a href="/dashboard" class="text-indigo-600 hover:underline">Back to Dashboard</a></p>
+  </main>
+</body>
+</html>
