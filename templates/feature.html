@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>New Order</title>
+<style>
+  body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 16px}
+  nav{display:flex;gap:16px;margin-bottom:32px}
+  nav a{color:#1a73e8;text-decoration:none}
+  input,select{display:block;width:100%;padding:8px;margin:4px 0 16px;box-sizing:border-box;border:1px solid #ccc;border-radius:4px}
+  .material-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .material-row select{margin:0;flex:1}
+  .material-row input{margin:0;width:80px;flex-shrink:0}
+  button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;border-radius:4px;cursor:pointer}
+  button:hover{background:#1558b0}
+  .flash{background:#d4edda;padding:8px 12px;border-radius:4px;margin-bottom:16px}
+</style>
+</head>
+<body>
+  <nav>
+    <strong>App</strong>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/feature">New Order</a>
+    <a href="/logout">Log out</a>
+  </nav>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<div class="flash">{{ messages[-1] }}</div>{% endif %}
+  {% endwith %}
+  <h1>New Order</h1>
+  <form method="POST">
+    <label>Order Description</label>
+    <input type="text" name="description" required>
+    {% if materials %}
+    <label>Materials</label>
+    {% for material in materials %}
+    <div class="material-row">
+      <select name="materials"><option value="{{ material.id }}">{{ material.name }}</option></select>
+      <input type="number" name="quantities" value="1" min="1">
+    </div>
+    {% endfor %}
+    {% else %}
+    <p><em>No materials in stock.</em></p>
+    {% endif %}
+    <button type="submit">Place Order</button>
+  </form>
+  <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>
