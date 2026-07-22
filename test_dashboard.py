@@ -1,8 +1,9 @@
 import pytest
+import sys
+sys.path.insert(0, '/path/to/your/flask/app')  # Adjust the path to your Flask app
 from flask import session
 from extensions import db
 from models.database import User, Order, Material
-
 def test_dashboard_redirects_when_not_logged_in(client):
     response = client.get('/dashboard')
     assert response.status_code == 302  # Should redirect to login
