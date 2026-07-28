@@ -13,8 +13,8 @@ WORKDIR /app
 
 COPY --from=builder /app /app
 
-RUN useradd -m appuser
-USER appuser
+RUN useradd -m flaskuser
+USER flaskuser
 
 EXPOSE 5000
 
