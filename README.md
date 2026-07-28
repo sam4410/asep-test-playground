@@ -39,10 +39,11 @@ A complete, runnable Python/Flask web application designed to help independent j
     - `username`: string
     - `email`: string
     - `password`: string
+    - `confirm_password`: string
   - **Response Shape:** Redirect to login page or error message
   - **Curl Example:**
     ```
-    curl -X POST http://localhost:5000/signup -d "username=testuser&email=test@example.com&password=testpass"
+    curl -X POST http://localhost:5000/signup -d "username=testuser&email=test@example.com&password=testpass&confirm_password=testpass"
     ```
 
 - **Log In**
