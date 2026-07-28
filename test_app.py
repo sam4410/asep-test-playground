@@ -1,10 +1,10 @@
 import pytest
 import sys
 sys.path.insert(0, '.')  # Add the root directory to the path
+from flask import Flask
 from app import create_app
 from extensions import db
 from models.database import User  # Assuming User model is defined in models/database.py
-
 @pytest.fixture
 def app():
     app = create_app()
