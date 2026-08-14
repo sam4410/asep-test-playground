@@ -1,0 +1,44 @@
+   <h2 class="text-2xl font-bold mb-4">Manage Orders</h2>
+   <form action="{{ url_for('feature.orders') }}" method="POST" class="bg-white p-6 rounded shadow-md mb-4">
+       <div class="mb-4">
+           <label for="material_requirements" class="block text-sm font-medium text-gray-700">Material Requirements</label>
+           <input type="text" name="material_requirements" id="material_requirements" required class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+       </div>
+       <div class="mb-4">
+           <label for="stock_level" class="block text-sm font-medium text-gray-700">Stock Level</label>
+           <input type="number" name="stock_level" id="stock_level" required class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+       </div>
+       <div class="mb-4">
+           <label for="payment_status" class="block text-sm font-medium text-gray-700">Payment Status</label>
+           <select name="payment_status" id="payment_status" required class="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+               <option value="paid">Paid</option>
+               <option value="overdue">Overdue</option>
+           </select>
+       </div>
+       <button type="submit" class="bg-indigo-600 text-white font-medium px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">Create Order</button>
+   </form>
+   <h3 class="text-lg font-semibold mb-2">Active Orders</h3>
+   <table class="w-full text-sm text-left border border-gray-300">
+       <thead class="bg-gray-50">
+           <tr>
+               <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Material Requirements</th>
+               <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Stock Level</th>
+               <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Payment Status</th>
+               <th class="px-4 py-3 font-semibold text-gray-600 uppercase tracking-wide text-xs">Actions</th>
+           </tr>
+       </thead>
+       <tbody>
+           {% for order in orders %}
+               <tr>
+                   <td class="border-b border-gray-300 px-4 py-2">{{ order.material_requirements }}</td>
+                   <td class="border-b border-gray-300 px-4 py-2">{{ order.stock_level }}</td>
+                   <td class="border-b border-gray-300 px-4 py-2">{{ order.payment_status }}</td>
+                   <td class="border-b border-gray-300 px-4 py-2">
+                       <form action="{{ url_for('feature.delete_order', order_id=order.id) }}" method="POST" class="inline">
+                           <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                       </form>
+                   </td>
+               </tr>
+           {% endfor %}
+       </tbody>
+   </table>
