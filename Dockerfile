@@ -13,8 +13,8 @@ WORKDIR /app
 
 COPY --from=builder /app /app
 
-RUN useradd -m quizuser
-USER quizuser
+RUN useradd -m appuser
+USER appuser
 
 EXPOSE 8000
 
