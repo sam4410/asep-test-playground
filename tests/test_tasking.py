@@ -1,4 +1,4 @@
-from db import models
+from db.models import YourModel  # Adjusted import to use the correct path
 # Your test code here...
 def test_db():
     Base.metadata.create_all(bind=engine)

@@ -1,4 +1,4 @@
-from your_project_name.db import models  # Adjusted import to use absolute path
+from db.models import Quiz, Question, Answer  # Adjusted import to use the correct path
 def db():
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
