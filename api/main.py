@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from db.models import Product, Category  # Added Category import
-from database import get_db
-from fastapi import APIRouter, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from .db.models import Team, User, get_db
+
+app = FastAPI()
+router = APIRouter()
 
 app = FastAPI()
 router = APIRouter()
@@ -28,6 +29,14 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
     return db_category
 
 @router.get("/categories", response_model=list[CategoryCreate])
+@router.get("/api/v1/products/{product_id}", response_model=Product)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+    
+app.include_router(router)
 def get_categories(db: Session = Depends(get_db)):
     categories = db.query(Category).all()
     return categories

@@ -1,7 +1,7 @@
-import pytest
-from .models import Quiz, Question, Answer, Habit  # Adjusted import to use relative path
-@pytest.fixture
-def client():
+from .api.db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
+
+def test_models_functionality():
+    # Test models functionality here
     from fastapi.testclient import TestClient
     return TestClient(app)
 from db.database import Base
