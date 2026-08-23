@@ -1,37 +1,50 @@
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from api.db import models  # Adjusted import to use the correct path
+from api.main import app
 from fastapi.testclient import TestClient
-from api.main import app
 
-from api.main import app
+client = TestClient(app)
 
 def test_create_habit():
     response = client.post("/habits", json={"name": "Test Habit", "target_frequency": 1})
     assert response.status_code == 200
     assert "id" in response.json()
 
+def test_log_habit():
+    response = client.post("/habits/log", json={"habit_name": "Test Habit", "user_id": 1})
+    assert response.status_code == 200
+    assert "id" in response.json()
+    assert response.json()["name"] == "Test Habit"
+
 def test_get_habit_streak():
-    response = client.get("/habits/streak/1")
+    response = client.post("/habits/log", json={"habit_name": "Test Habit", "user_id": 1})
+    habit_id = response.json()["id"]
+    
+    response = client.get(f"/habits/streak/{habit_id}")
     assert response.status_code == 200
     assert "streak_count" in response.json()
-from transactions import app  # Adjusted import to match the correct module structure
+    assert response.json()["streak_count"] == 0  # Default streak count should be 0
 
-# ... rest of the test code ...
+def test_get_habit_streak_not_found():
+    response = client.get("/habits/streak/999")  # Assuming habit_id 999 does not exist
+    assert response.status_code == 404  # Not Found for non-existent habit
+    assert response.json() == {"detail": "Habit not found"}
 
-client = TestClient(app)
+def test_log_habit_invalid_user():
+    response = client.post("/habits/log", json={"habit_name": "Test Habit", "user_id": -1})
+    assert response.status_code == 422  # Unprocessable Entity for invalid input
 
-def test_example():
-    assert True
-from db.models import Expense, Category
-from database import get_db
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+def test_get_habits():
+    response = client.get("/habits?user_id=1")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)  # Should return a list of habits
 
-Base = declarative_base()
-
+def test_get_habits_no_habits():
+    response = client.get("/habits?user_id=999")  # Assuming user_id 999 has no habits
+    assert response.status_code == 200
+    assert response.json() == []  # Should return an empty list
 @pytest.fixture(scope="module")
 def test_db():
     # Setup the test database
