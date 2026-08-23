@@ -1,5 +1,5 @@
-# Online Quiz Platform
-An online quiz platform where teachers can create quizzes and students can take them.
+# Team Task Management Tool
+A tool for team members to create and assign tasks efficiently.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
@@ -10,135 +10,66 @@ An online quiz platform where teachers can create quizzes and students can take 
 
 ## API Endpoints
 
-### Create Quiz
+### Create Task
 - **Method:** POST
-- **Path:** /api/v1/quizzes
+- **Path:** /api/v1/tasks
 - **Request Body:**
 ```json
 {
     "title": "string",
-    "questions": [
-        {
-            "text": "string",
-            "correct_answer": {
-                "text": "string"
-            }
-        }
-    ]
+    "description": "string",
+    "assignee_id": "integer"
 }
 ```
 - **Response Shape:**
 ```json
 {
     "id": "integer",
-    "title": "string"
+    "title": "string",
+    "description": "string",
+    "assignee_id": "integer",
+    "status": "string",
+    "created_at": "integer",
+    "updated_at": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/quizzes -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": [{"text": "What is 2 + 2?", "correct_answer": {"text": "4"}}]}'
+curl -X POST http://localhost:8000/api/v1/tasks -H "Content-Type: application/json" -d '{"title": "Test Task", "description": "This is a test task.", "assignee_id": 1}'
 ```
 
-### Get Quiz
+### Get Tasks
 - **Method:** GET
-- **Path:** /api/v1/quizzes/{quiz_id}
+- **Path:** /api/v1/tasks
 - **Response Shape:**
-```json
-{
-    "id": "integer",
-    "title": "string"
-}
-```
-- **Curl Example:**
-```bash
-curl -X GET http://localhost:8000/api/v1/quizzes/1
-```
-
-### Update Quiz
-- **Method:** PUT
-- **Path:** /api/v1/quizzes/{quiz_id}
-- **Request Body:**
-```json
-{
-    "title": "string",
-    "questions": [
-        {
-            "text": "string",
-            "correct_answer": {
-                "text": "string"
-            }
-        }
-    ]
-}
-```
-- **Response Shape:**
-```json
-{
-    "id": "integer",
-    "title": "string"
-}
-```
-- **Curl Example:**
-```bash
-curl -X PUT http://localhost:8000/api/v1/quizzes/1 -H "Content-Type: application/json" -d '{"title": "Updated Quiz", "questions": []}'
-```
-
-### Delete Quiz
-- **Method:** DELETE
-- **Path:** /api/v1/quizzes/{quiz_id}
-- **Response Shape:**
-```json
-{
-    "detail": "string"
-}
-```
-- **Curl Example:**
-```bash
-curl -X DELETE http://localhost:8000/api/v1/quizzes/1
-```
-
-### Take Quiz
-- **Method:** POST
-- **Path:** /api/v1/quizzes/{quiz_id}/take
-- **Request Body:**
 ```json
 [
     {
-        "question_id": "integer",
-        "selected_answer_id": "integer"
+        "id": "integer",
+        "title": "string",
+        "description": "string",
+        "assignee_id": "integer",
+        "status": "string",
+        "created_at": "integer",
+        "updated_at": "integer"
     }
 ]
 ```
-- **Response Shape:**
-```json
-{
-    "score": "integer"
-}
-```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/quizzes/1/take -H "Content-Type: application/json" -d '[{"question_id": 1, "selected_answer_id": 1}]'
+curl -X GET http://localhost:8000/api/v1/tasks
 ```
 
 ## Models
 
-### Quiz
+### Task
 - **id**: Integer, primary key
-- **title**: String, quiz title
-
-### Question
-- **id**: Integer, primary key
-- **quiz_id**: Integer, foreign key to Quiz
-- **text**: String, question text
-
-### Answer
-- **id**: Integer, primary key
-- **question_id**: Integer, foreign key to Question
-- **text**: String, answer text
-
-### Teacher
-- **id**: Integer, primary key
-- **name**: String, teacher's name
+- **title**: String, task title
+- **description**: String, task description
+- **assignee_id**: Integer, foreign key to User
+- **status**: String, task status (e.g., "todo", "in_progress", "done")
+- **created_at**: Integer, timestamp for task creation
+- **updated_at**: Integer, timestamp for last update
 
 ## Existing Sections
 ### Small Online Store
