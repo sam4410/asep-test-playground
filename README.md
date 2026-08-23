@@ -1,5 +1,5 @@
-# Small Online Store
-A simple web application for a small business to manage an online storefront, including product catalog, shopping cart, and checkout functionality.
+# Online Quiz Platform
+An online quiz platform where teachers can create quizzes and students can take them.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
@@ -10,81 +10,82 @@ A simple web application for a small business to manage an online storefront, in
 
 ## API Endpoints
 
-### Create Product
+### Create Quiz
 - **Method:** POST
-- **Path:** /api/v1/products
+- **Path:** /api/v1/quizzes
 - **Request Body:**
 ```json
 {
-    "name": "string",
-    "description": "string",
-    "price": "float",
-    "stock_quantity": "integer"
+    "title": "string",
+    "questions": [
+        {
+            "text": "string",
+            "correct_answer": {
+                "text": "string"
+            }
+        }
+    ]
 }
 ```
 - **Response Shape:**
 ```json
 {
     "id": "integer",
-    "name": "string",
-    "description": "string",
-    "price": "float",
-    "stock_quantity": "integer"
+    "title": "string"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/products -H "Content-Type: application/json" -d '{"name": "Test Product", "description": "A product for testing", "price": 10.99, "stock_quantity": 100}'
+curl -X POST http://localhost:8000/api/v1/quizzes -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": [{"text": "What is 2 + 2?", "correct_answer": {"text": "4"}}]}'
 ```
 
-### Get Product
+### Get Quiz
 - **Method:** GET
-- **Path:** /api/v1/products/{product_id}
+- **Path:** /api/v1/quizzes/{quiz_id}
 - **Response Shape:**
 ```json
 {
     "id": "integer",
-    "name": "string",
-    "description": "string",
-    "price": "float",
-    "stock_quantity": "integer"
+    "title": "string"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X GET http://localhost:8000/api/v1/products/1
+curl -X GET http://localhost:8000/api/v1/quizzes/1
 ```
 
-### Update Product
+### Update Quiz
 - **Method:** PUT
-- **Path:** /api/v1/products/{product_id}
+- **Path:** /api/v1/quizzes/{quiz_id}
 - **Request Body:**
 ```json
 {
-    "name": "string",
-    "description": "string",
-    "price": "float",
-    "stock_quantity": "integer"
+    "title": "string",
+    "questions": [
+        {
+            "text": "string",
+            "correct_answer": {
+                "text": "string"
+            }
+        }
+    ]
 }
 ```
 - **Response Shape:**
 ```json
 {
     "id": "integer",
-    "name": "string",
-    "description": "string",
-    "price": "float",
-    "stock_quantity": "integer"
+    "title": "string"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X PUT http://localhost:8000/api/v1/products/1 -H "Content-Type: application/json" -d '{"name": "Updated Product", "description": "An updated product", "price": 12.99, "stock_quantity": 50}'
+curl -X PUT http://localhost:8000/api/v1/quizzes/1 -H "Content-Type: application/json" -d '{"title": "Updated Quiz", "questions": []}'
 ```
 
-### Delete Product
+### Delete Quiz
 - **Method:** DELETE
-- **Path:** /api/v1/products/{product_id}
+- **Path:** /api/v1/quizzes/{quiz_id}
 - **Response Shape:**
 ```json
 {
@@ -93,43 +94,51 @@ curl -X PUT http://localhost:8000/api/v1/products/1 -H "Content-Type: applicatio
 ```
 - **Curl Example:**
 ```bash
-curl -X DELETE http://localhost:8000/api/v1/products/1
+curl -X DELETE http://localhost:8000/api/v1/quizzes/1
 ```
 
-### Checkout
+### Take Quiz
 - **Method:** POST
-- **Path:** /api/v1/checkout
+- **Path:** /api/v1/quizzes/{quiz_id}/take
 - **Request Body:**
 ```json
-{
-    "items": [
-        {
-            "product_id": "integer",
-            "quantity": "integer"
-        }
-    ]
-}
+[
+    {
+        "question_id": "integer",
+        "selected_answer_id": "integer"
+    }
+]
 ```
 - **Response Shape:**
 ```json
 {
-    "message": "string",
-    "total": "float"
+    "score": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/checkout -H "Content-Type: application/json" -d '{"items": [{"product_id": 1, "quantity": 2}]}'
+curl -X POST http://localhost:8000/api/v1/quizzes/1/take -H "Content-Type: application/json" -d '[{"question_id": 1, "selected_answer_id": 1}]'
 ```
 
 ## Models
 
-### Product
+### Quiz
 - **id**: Integer, primary key
-- **name**: String, product name
-- **description**: String, product description
-- **price**: Float, product price
-- **stock_quantity**: Integer, available stock quantity
+- **title**: String, quiz title
+
+### Question
+- **id**: Integer, primary key
+- **quiz_id**: Integer, foreign key to Quiz
+- **text**: String, question text
+
+### Answer
+- **id**: Integer, primary key
+- **question_id**: Integer, foreign key to Question
+- **text**: String, answer text
+
+### Teacher
+- **id**: Integer, primary key
+- **name**: String, teacher's name
 
 ## Existing Sections
 ### Small Online Store
