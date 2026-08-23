@@ -1,5 +1,4 @@
-from api.main import app  # Adjusted import to use absolute path
-import pytest
+from ..api.main import app  # Adjusted import to use relative path
 from fastapi.testclient import TestClient
 from api.db.database import get_db, Base
 from sqlalchemy import create_engine
