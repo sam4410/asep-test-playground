@@ -27,6 +27,17 @@ class Expense(Base):
 
     user = relationship("User", back_populates="expenses")
 
+class Product(Base):
+    __tablename__ = 'products'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    price = Column(Float, nullable=False)
+    stock_quantity = Column(Integer, nullable=False)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+
+    category = relationship("Category", back_populates="products")
 class Habit(Base):
     __tablename__ = 'habits'
 
