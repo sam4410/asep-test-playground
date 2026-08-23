@@ -1,13 +1,13 @@
 from db.database import get_db  # Adjusted import to use the correct path
 
 from api.db import db  # Adjusted import to use the correct path
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from api.db.database import get_db
 from fastapi.testclient import TestClient
 from api.main import app
 
-
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def override_get_db():
     db = TestingSessionLocal()

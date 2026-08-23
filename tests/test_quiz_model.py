@@ -1,12 +1,12 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from ..db.models import Base, Quiz, Question, Answer
-from ..db.database import get_db
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from api.db.models import Base, Quiz, Question, Answer  # Adjusted import to use the correct path
+from fastapi.testclient import TestClient
+from api.main import app
 
 @pytest.fixture(scope="module")
 def db():

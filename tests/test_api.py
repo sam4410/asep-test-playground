@@ -5,6 +5,8 @@ from api.db import models  # Adjusted import to use the correct path
 from fastapi.testclient import TestClient
 from api.main import app
 
+from api.main import app
+
 def test_create_habit():
     response = client.post("/habits", json={"name": "Test Habit", "target_frequency": 1})
     assert response.status_code == 200
