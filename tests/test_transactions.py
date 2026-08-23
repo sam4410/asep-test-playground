@@ -1,7 +1,4 @@
-from db.main import app  # Adjusted import to match the correct module structure
-# Other test code...client = TestClient(app)
-
-@pytest.fixture
+from main import app  # Adjusted import to match the correct module structure@pytest.fixture
 def db_session():
     # Setup code for creating a new database session
     # This should be replaced with actual session creation logic

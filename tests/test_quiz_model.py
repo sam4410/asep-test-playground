@@ -1,6 +1,4 @@
-from db.models import Base, Quiz, Question, Answer  # Adjusted import to match the correct module structure
-# Other test code...
-from db.database import get_db
+from db import models  # Adjusted import to match the correct module structure
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
