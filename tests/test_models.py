@@ -1,4 +1,4 @@
-import sys
+from api.models import Quiz, Question, Answer, Habit  # Adjusted import to include Habit
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 

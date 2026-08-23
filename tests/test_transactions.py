@@ -1,5 +1,4 @@
-from transactions import app  # Adjusted import to match the correct module structure
-
+from api.habits import app  # Adjusted import to match the correct module structure
 # ... rest of the test code ...from db.models import Expense
 from sqlalchemy.orm import Session
 from database import get_db

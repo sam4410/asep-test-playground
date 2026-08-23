@@ -1,4 +1,4 @@
-import sys
+from api.habits import app  # Adjusted import to match the correct module structure
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
