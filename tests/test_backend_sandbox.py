@@ -1,6 +1,6 @@
+from db.models import Product  # Adjusted import to use absolute path
 import pytest
-from models import Product
-from services.cart import ShoppingCart
+
 
 class MockProductRepository:
     def __init__(self, products):

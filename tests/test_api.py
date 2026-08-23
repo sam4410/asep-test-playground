@@ -1,5 +1,6 @@
+from api.main import app  # Adjusted import to use absolute path
 import pytest
-from main import app
+from fastapi.testclient import TestClient
 
 def test_example():
     assert True
