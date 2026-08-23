@@ -1,6 +1,7 @@
-from api.main import app  # Adjusted import to use absolute path
+from api.main import app  # Adjusted import to match the correct module structure
 import pytest
 from fastapi.testclient import TestClient
+
 
 def test_example():
     assert True

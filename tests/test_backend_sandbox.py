@@ -1,4 +1,4 @@
-from db.models import Product  # Adjusted import to use absolute path
+from db.models import Product  # Adjusted import to match the correct module structure
 import pytest
 
 
