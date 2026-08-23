@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from api.db.models import Task, User  # Adjusted import to use the correct path
-from api.db.database import get_db  # Adjusted import to use the correct path
+from .db.models import Task, User  # Adjusted import to use the correct path
+from .db.database import get_db  # Adjusted import to use the correct path
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List, Optional
 
 router = APIRouter()
 
@@ -32,5 +33,19 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     db.refresh(db_task)
     return db_task
 
-from api.main import app  # No change needed here
+class TaskFilter(BaseModel):
+    assignee_id: Optional[int] = None
+    status: Optional[str] = None
+
+@router.get("/api/v1/tasks", response_model=List[Task])
+def get_tasks(filter: TaskFilter = Depends(), db: Session = Depends(get_db)):
+    query = db.query(Task)
+    if filter.assignee_id:
+        query = query.filter(Task.assignee_id == filter.assignee_id)
+    if filter.status:
+        query = query.filter(Task.status == filter.status)
+    tasks = query.all()
+    return tasks
+
+from .main import app  # No change needed here
 app.include_router(router)
