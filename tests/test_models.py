@@ -1,8 +1,10 @@
-from asep.api.models import Quiz, Question, Answer  # Removed Habit import as it is not used
+from db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
 import pytest
 
-# Add your test cases here
-from models import Quiz, Question, Answer
+@pytest.fixture
+def client():
+    from fastapi.testclient import TestClient
+    return TestClient(app)
 from db.database import Base
 
 @pytest.fixture(scope="module")

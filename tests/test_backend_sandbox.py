@@ -1,4 +1,7 @@
-from asep.db.models import Product  # Removed Habit import as it is not used
+from db.models import Product, Habit  # Adjusted import to match the correct module structure
 import pytest
 
-# Add your test cases here
+@pytest.fixture
+def client():
+    from fastapi.testclient import TestClient
+    return TestClient(app)
