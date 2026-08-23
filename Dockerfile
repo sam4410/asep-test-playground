@@ -13,11 +13,11 @@ WORKDIR /app
 
 COPY --from=builder /app /app
 
-RUN useradd -m appuser
-USER appuser
+RUN useradd -m quizuser
+USER quizuser
 
 EXPOSE 8000
 
 HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
 
-CMD ["python", "db/models.py"]
+CMD ["python", "api/main.py"]
