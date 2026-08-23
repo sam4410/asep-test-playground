@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from main import app  # Adjusted import to use the correct path
 from db.models import Quiz, Question, Answer
-from db.database import get_db
+from db.database import get_db, TestingSessionLocal, Base, engine
 
 client = TestClient(app)
 
@@ -58,6 +58,56 @@ def test_delete_quiz(db):
     db.refresh(quiz)
 
     response = client.delete(f"/api/v1/quizzes/{quiz.id}")
+    assert response.status_code == 200
+    assert response.json() == {"detail": "Quiz deleted successfully"}
+
+    response = client.get(f"/api/v1/quizzes/{quiz.id}")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Quiz not found"
+
+def test_take_quiz(db):
+    quiz = Quiz(title="Sample Quiz")
+    db.add(quiz)
+    db.commit()
+    db.refresh(quiz)
+
+    question = Question(text="What is 2 + 2?", quiz_id=quiz.id, correct_answer_id=None)
+    db.add(question)
+    db.commit()
+    db.refresh(question)
+
+    answer = Answer(text="4", question_id=question.id)
+    db.add(answer)
+    db.commit()
+    db.refresh(answer)
+
+    response = client.post(f"/api/v1/quizzes/{quiz.id}/take", json={
+        "answers": [
+            {
+                "question_id": question.id,
+                "selected_answer_id": answer.id
+            }
+        ]
+    })
+    assert response.status_code == 200
+    assert response.json()["score"] == 1
+
+def test_take_quiz_invalid_question(db):
+    quiz = Quiz(title="Sample Quiz")
+    db.add(quiz)
+    db.commit()
+    db.refresh(quiz)
+
+    response = client.post(f"/api/v1/quizzes/{quiz.id}/take", json={
+        "answers": [
+            {
+                "question_id": 999,  # Invalid question ID
+                "selected_answer_id": 1
+            }
+        ]
+    })
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Question 999 not found"
     assert response.status_code == 200
     assert response.json() == {"detail": "Quiz deleted successfully"}
 
