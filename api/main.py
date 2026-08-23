@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from database import get_db
-from db.models import Product
-from fastapi import APIRouter
+from db.models import Task, User, Product
+from pydantic import BaseModel
+from datetime import datetime
 
 app = FastAPI()
 router = APIRouter()
@@ -116,6 +117,76 @@ def get_team_members(team_id: int):
     return teams[team_id]["members"]
 
 app.include_router(router)
+
+class Task(BaseModel):
+    id: int
+    title: str
+    description: str
+    assignee_id: int
+    status: str
+    created_at: int
+    updated_at: int
+
+class TaskCreate(BaseModel):
+    title: str
+    description: str
+    assignee_id: int
+
+@router.post("/api/v1/tasks", response_model=Task)
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+    # Validate assignee exists
+    assignee = db.query(User).filter(User.id == task.assignee_id).first()
+    if not assignee:
+        raise HTTPException(status_code=404, detail="Assignee not found")
+    
+    db_task = Task(
+        title=task.title,
+        description=task.description,
+        assignee_id=task.assignee_id,
+        status="todo",  # Default status
+        created_at=int(datetime.now().timestamp()),  # Store as Unix timestamp
+        updated_at=int(datetime.now().timestamp())   # Store as Unix timestamp
+    )
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+@router.get("/api/v1/tasks/{task_id}", response_model=Task)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+@router.get("/api/v1/tasks", response_model=list[Task])
+def get_tasks(db: Session = Depends(get_db)):
+    tasks = db.query(Task).all()
+    return tasks
+
+@router.put("/api/v1/tasks/{task_id}", response_model=Task)
+def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+    db_task = db.query(Task).filter(Task.id == task_id).first()
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    db_task.title = task.title
+    db_task.description = task.description
+    db_task.assignee_id = task.assignee_id
+    db_task.updated_at = int(datetime.now().timestamp())
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+@router.delete("/api/v1/tasks/{task_id}", response_model=dict)
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    db_task = db.query(Task).filter(Task.id == task_id).first()
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    db.delete(db_task)
+    db.commit()
+    return {"detail": "Task deleted successfully"}
 
 @router.post("/api/v1/products", response_model=Product)
 def create_product(product: Product, db: Session = Depends(get_db)):
