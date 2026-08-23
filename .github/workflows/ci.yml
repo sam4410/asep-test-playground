@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Cache pip dependencies
+      - name: Cache pip
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
@@ -46,4 +46,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-online-store .
+          docker build -t task-management-tool .
