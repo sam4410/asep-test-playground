@@ -1,4 +1,4 @@
-from .db import models  # Adjusted import to use relative path
+from your_project_name.db import models  # Adjusted import to use absolute path
 def db():
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()

@@ -1,5 +1,4 @@
-from db.tasks import app  # Changed to absolute import
-
+from your_project_name.db.tasks import app
 # Your test code here...
 
 from api.habits import app

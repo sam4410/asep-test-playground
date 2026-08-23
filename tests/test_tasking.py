@@ -1,4 +1,4 @@
-from db import models  # Changed to absolute import
+from your_project_name.db import models  # Changed to absolute import
 
 # Your test code here...
 def test_db():

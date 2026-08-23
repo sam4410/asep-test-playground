@@ -1,3 +1,2 @@
-from db.models import Base, Quiz, Question, Answer, Habit  # Changed to absolute import
-
+from your_project_name.db.models import Base, Quiz, Question, Answer, Habit
 # Your test code here...
