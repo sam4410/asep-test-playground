@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base  # Adjusted import to use relative path
+from database import Base  # Adjusted import to use absolute path
 from .user import User  # Added import for User model
 
 class Teacher(Base):
