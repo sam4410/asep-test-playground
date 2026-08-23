@@ -1,6 +1,5 @@
-from db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
 import pytest
-
+from db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
 @pytest.fixture
 def client():
     from fastapi.testclient import TestClient
