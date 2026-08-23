@@ -1,6 +1,143 @@
-from pathlib import Path
-import sys
+from api.main import app  # Adjusted import to use absolute path
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from api.db.models import Base, User, Task
 
+DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(DATABASE_URL)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+@pytest.fixture
+def test_db():
+    Base.metadata.create_all(bind=engine)
+    yield TestingSessionLocal()
+    Base.metadata.drop_all(bind=engine)
+
+@pytest.fixture
+def client(test_db):
+    def override_get_db():
+        try:
+            yield test_db
+        finally:
+            test_db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as c:
+        yield c
+
+def test_create_task(client):
+    # Create a user to assign the task to
+    user = User(username="testuser", password="testpass")
+    db = next(client.dependency_overrides[get_db]())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    response = client.post("/api/v1/tasks", json={
+        "title": "Test Task",
+        "description": "This is a test task.",
+        "assignee_id": user.id
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["title"] == "Test Task"
+    assert data["description"] == "This is a test task."
+    assert data["status"] == "todo"
+
+def test_create_task_missing_title(client):
+    response = client.post("/api/v1/tasks", json={
+        "description": "This is a test task.",
+        "assignee_id": 1
+    })
+    assert response.status_code == 422  # Unprocessable Entity
+
+def test_create_task_invalid_assignee(client):
+    response = client.post("/api/v1/tasks", json={
+        "title": "Test Task",
+        "description": "This is a test task.",
+        "assignee_id": 999  # Invalid assignee_id
+    })
+    assert response.status_code == 404  # Not Found
+
+def test_get_task(client):
+    # Create a user to assign the task to
+    user = User(username="testuser", password="testpass")
+    db = next(client.dependency_overrides[get_db]())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # Create a task
+    task_response = client.post("/api/v1/tasks", json={
+        "title": "Test Task",
+        "description": "This is a test task.",
+        "assignee_id": user.id
+    })
+    task_id = task_response.json()["id"]
+
+    # Get the task
+    response = client.get(f"/api/v1/tasks/{task_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == task_id
+    assert data["title"] == "Test Task"
+
+def test_get_task_not_found(client):
+    response = client.get("/api/v1/tasks/999")  # Non-existent task ID
+    assert response.status_code == 404  # Not Found
+
+def test_update_task(client):
+    # Create a user to assign the task to
+    user = User(username="testuser", password="testpass")
+    db = next(client.dependency_overrides[get_db]())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # Create a task
+    task_response = client.post("/api/v1/tasks", json={
+        "title": "Test Task",
+        "description": "This is a test task.",
+        "assignee_id": user.id
+    })
+    task_id = task_response.json()["id"]
+
+    # Update the task
+    response = client.put(f"/api/v1/tasks/{task_id}", json={
+        "title": "Updated Task",
+        "description": "This is an updated test task.",
+        "assignee_id": user.id
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["title"] == "Updated Task"
+
+def test_delete_task(client):
+    # Create a user to assign the task to
+    user = User(username="testuser", password="testpass")
+    db = next(client.dependency_overrides[get_db]())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # Create a task
+    task_response = client.post("/api/v1/tasks", json={
+        "title": "Test Task",
+        "description": "This is a test task.",
+        "assignee_id": user.id
+    })
+    task_id = task_response.json()["id"]
+
+    # Delete the task
+    response = client.delete(f"/api/v1/tasks/{task_id}")
+    assert response.status_code == 200
+    assert response.json() == {"detail": "Task deleted successfully"}
+
+def test_delete_task_not_found(client):
+    response = client.delete("/api/v1/tasks/999")  # Non-existent task ID
+    assert response.status_code == 404  # Not Found
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 
