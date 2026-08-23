@@ -1,3 +1,19 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from api.habits import router as app
+from fastapi.testclient import TestClient
+client = TestClient(app)
+def test_create_habit():
+    response = client.post("/habits", json={"name": "Test Habit", "target_frequency": 1})
+    assert response.status_code == 200
+    assert "id" in response.json()
+
+def test_get_habit_streak():
+    response = client.get("/habits/streak/1")
+    assert response.status_code == 200
+    assert "streak_count" in response.json()
 from transactions import app  # Adjusted import to match the correct module structure
 
 # ... rest of the test code ...

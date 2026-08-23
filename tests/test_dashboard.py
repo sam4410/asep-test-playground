@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from api.habits import router as app
 from dashboard import app
 
 # ... rest of the test code ...

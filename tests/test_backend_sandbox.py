@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from db.models import Product
 from models import Product  # Ensure correct import path
 
 # ... rest of the test code ...
