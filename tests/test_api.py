@@ -1,4 +1,4 @@
-import pytest
+from main import app  # Adjusted import to match the correct module structure
 from fastapi.testclient import TestClient
 from main import app
 from db.models import Expense

@@ -1,1 +1,1 @@
-from models import Product
+from models import Product  # Ensure correct import path
