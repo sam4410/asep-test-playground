@@ -12,3 +12,13 @@ class Expense(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     user = relationship("User", back_populates="expenses")
+
+class Habit(Base):
+    __tablename__ = 'habits'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    streak_count = Column(Integer, default=0)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship("User", back_populates="habits")
