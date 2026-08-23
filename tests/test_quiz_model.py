@@ -1,7 +1,5 @@
-import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from api.db.models import Base, Quiz, Question, Answer
+from db.models import Base, Quiz, Question, Answer  # Adjusted import to match the correct module structure
+# Other test code...
 from db.database import get_db
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

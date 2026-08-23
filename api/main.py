@@ -1,6 +1,42 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from db.models import Product, Category
+from database import get_db
+
+app = FastAPI()
+router = APIRouter()
+
+@router.get("/api/v1/products", response_model=list[Product])
+def get_products(db: Session = Depends(get_db)):
+    products = db.query(Product).all()
+    return products
+
+class ProductCreate(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    stock_quantity: int
+    category_id: int
+
+@router.post("/api/v1/admin/products", response_model=Product)
+def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+    db_product = Product(
+        name=product.name,
+        description=product.description,
+        price=product.price,
+        stock_quantity=product.stock_quantity,
+        category_id=product.category_id
+    )
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+app.include_router(router)
+from fastapi import FastAPI, Depends, HTTPException, APIRouter
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from db.models import Team, User, get_db
 
 app = FastAPI()

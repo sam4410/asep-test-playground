@@ -1,7 +1,5 @@
-from api.db.main import app  # Adjusted import to match the correct module structureimport pytest
-
-# ... rest of the test code ...
-client = TestClient(app)
+from db.main import app  # Adjusted import to match the correct module structure
+# Other test code...client = TestClient(app)
 
 @pytest.fixture
 def db_session():

@@ -1,7 +1,5 @@
-from api.db.models import Base, Task, TaskStatus  # Adjusted import to match the correct module structure
-import pytest
-
-# ... rest of the test code ...
+from db.models import Base, Task, TaskStatus  # Adjusted import to match the correct module structure
+# Other test code...
 from models import Base, Task, TaskStatus
 from database import get_db
 from fastapi.testclient import TestClient
