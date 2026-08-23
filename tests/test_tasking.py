@@ -1,8 +1,4 @@
-from db import models  # Adjusted import to match the correct module structure
-from your_project_name.db.models import models  # Adjusted import to match the correct module structure
-
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+from .db import models  # Adjusted import to use relative path
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @pytest.fixture(scope="module")

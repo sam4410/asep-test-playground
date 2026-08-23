@@ -1,4 +1,4 @@
-from api.db.tasks import app  # Adjusted import to match the correct module structure
+from .db.tasks import app  # Adjusted import to use relative path
 
 def test_example():
     assert True

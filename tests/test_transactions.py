@@ -1,9 +1,4 @@
-from main import app  # Adjusted import to match the correct module structure@pytest.fixture
-def db_session():
-    # Setup code for creating a new database session
-    # This should be replaced with actual session creation logic
-    pass
-
+from .main import app  # Adjusted import to use relative path
 def test_create_expense(db_session):
     response = client.post("/expenses", json={
         "amount": 1000,

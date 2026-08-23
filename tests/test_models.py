@@ -1,3 +1,1 @@
-from db.models import Base, Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
-from your_project_name.db.models import Base, Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
-# ... rest of the test code ...
+from .db.models import Base, Quiz, Question, Answer, Habit  # Adjusted import to use relative path
