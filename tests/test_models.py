@@ -1,4 +1,4 @@
-from your_project.api.models import Quiz, Question, Answer, Habit  # Adjusted import to include Habit
+from models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
 
 def test_example():
     assert True

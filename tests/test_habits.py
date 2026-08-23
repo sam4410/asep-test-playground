@@ -1,4 +1,4 @@
-from your_project.api.habits import app
+from tasks import app  # Adjusted import to match the correct module structure
 
 def test_example():
     assert True
