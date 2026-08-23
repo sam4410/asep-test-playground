@@ -1,6 +1,4 @@
-import pytest
-from db.tasks import app  # Adjusted import to match the correct module structure
-@pytest.fixture
+from .main import app  # Adjusted import to use relative path
 def client():
     from fastapi.testclient import TestClient
     return TestClient(app)

@@ -1,6 +1,4 @@
-import pytest
-from db.models import Product
-from services.cart import ShoppingCart
+from .models import Product, Habit  # Adjusted import to use relative path
 
 class MockProductRepository:
     def __init__(self, products):
