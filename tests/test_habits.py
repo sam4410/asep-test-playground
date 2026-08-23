@@ -1,8 +1,6 @@
-from your_project_name import db  # Ensure this path is correct
-import pytest
+from api.db import db  # Adjusted import to use the correct path
 
-# Your test cases here
-from sqlalchemy import create_engine
+# Your test code here
 from sqlalchemy.orm import sessionmaker
 from database import Base, get_db
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

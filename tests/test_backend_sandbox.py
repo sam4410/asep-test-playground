@@ -1,8 +1,6 @@
-from your_project_name.api import db  # Ensure this path is correct
-import pytest
+from api.db import db  # Adjusted import to use the correct path
 
-# Your test cases here
-from db.models import Product, Habit  # Adjusted import to include Habit
+# Your test code here
 from models import Product  # Ensure correct import path
 
 # ... rest of the test code ...

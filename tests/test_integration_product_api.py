@@ -1,8 +1,6 @@
-from your_project_name.api import db  # Ensure this path is correct
-import pytest
+from api.db import db  # Adjusted import to use the correct path
 
-# Your test cases here
-from your_project_name.db.models import Product
+# Your test code here
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from your_project_name.database import get_db, Base
