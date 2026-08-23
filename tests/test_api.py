@@ -1,6 +1,6 @@
-from db.tasks import app
-# Your test code here...
+from your_project_name import db
 
+# Your test code here
 from api.habits import router as app
 from fastapi.testclient import TestClient
 client = TestClient(app)

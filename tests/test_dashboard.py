@@ -1,6 +1,6 @@
-from db.tasks import app
-# Your test code here...
+from your_project_name import db
 
+# Your test code here
 from api.habits import app
 from dashboard import app
 

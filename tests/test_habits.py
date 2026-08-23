@@ -1,6 +1,6 @@
-from db.tasks import app
-from fastapi.testclient import TestClient
-from db.models import Habit
+from your_project_name import db
+
+# Your test code here
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import Base, get_db

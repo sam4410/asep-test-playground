@@ -1,6 +1,6 @@
-from db.tasks import app
-# Your test code here...
-from db.models import Product
+from your_project_name import db
+
+# Your test code here
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import get_db, Base

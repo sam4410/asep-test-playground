@@ -1,2 +1,3 @@
-from db.models import Base, Quiz, Question, Answer, Habit
-# Your test code here...
+from your_project_name.db import models
+
+# Your test code here

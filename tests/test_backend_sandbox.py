@@ -1,6 +1,6 @@
-from db.models import Product, Habit
-# Your test code here...
+from your_project_name.db import models
 
+# Your test code here
 from db.models import Product, Habit  # Adjusted import to include Habit
 from models import Product  # Ensure correct import path
 
