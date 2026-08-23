@@ -1,6 +1,7 @@
+from db.models import Base, Task, TaskStatus  # Adjusted import to match the correct module structure
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+
+# ... rest of the test code ...
 from models import Base, Task, TaskStatus
 from database import get_db
 from fastapi.testclient import TestClient
