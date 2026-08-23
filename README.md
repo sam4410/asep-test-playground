@@ -1,5 +1,5 @@
-# Habit Tracker App
-A simple web application for tracking daily habits and monitoring streaks.
+# Student Quiz Platform
+A web application for teachers to create quizzes and assess student performance without the complexity of a full learning management system.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
@@ -10,110 +10,95 @@ A simple web application for tracking daily habits and monitoring streaks.
 
 ## API Endpoints
 
-### Log Habit
+### Create Quiz
 - **Method:** POST
-- **Path:** /habits/log
+- **Path:** /api/v1/quizzes
 - **Request Body:**
 ```json
 {
-    "habit_name": "string",
-    "user_id": "integer"
+    "title": "string",
+    "questions": [
+        {
+            "text": "string",
+            "correct_answer": {
+                "text": "string"
+            }
+        }
+    ]
 }
 ```
 - **Response Shape:**
 ```json
 {
     "id": "integer",
-    "name": "string",
-    "streak_count": "integer",
-    "user_id": "integer"
+    "title": "string"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/habits/log -H "Content-Type: application/json" -d '{"habit_name": "Test Habit", "user_id": 1}'
+curl -X POST http://localhost:8000/api/v1/quizzes -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": [{"text": "What is 2 + 2?", "correct_answer": {"text": "4"}}]}'
 ```
 
-### Create Habit
+### Take Quiz
 - **Method:** POST
-- **Path:** /habits
+- **Path:** /api/v1/quizzes/{quiz_id}/take
 - **Request Body:**
 ```json
 {
-    "name": "string",
-    "target_frequency": "integer"
+    "answers": [
+        {
+            "question_id": "integer",
+            "selected_answer_id": "integer"
+        }
+    ]
 }
 ```
 - **Response Shape:**
 ```json
 {
-    "id": "integer",
-    "name": "string",
-    "target_frequency": "integer"
+    "quiz_id": "integer",
+    "score": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/habits -H "Content-Type: application/json" -d '{"name": "Test Habit", "target_frequency": 1}'
+curl -X POST http://localhost:8000/api/v1/quizzes/1/take -H "Content-Type: application/json" -d '{"answers": [{"question_id": 1, "selected_answer_id": 1}]}'
 ```
 
-### Get Habits
+### Teacher Dashboard
 - **Method:** GET
-- **Path:** /habits
-- **Request Query Parameters:** 
-  - `user_id`: integer
+- **Path:** /api/v1/teachers/{teacher_id}/dashboard
 - **Response Shape:**
 ```json
 [
     {
-        "id": "integer",
-        "name": "string",
-        "streak_count": "integer"
+        "student_id": "integer",
+        "quiz_id": "integer",
+        "score": "integer"
     }
 ]
 ```
 - **Curl Example:**
 ```bash
-curl -X GET "http://localhost:8000/habits?user_id=1"
-```
-
-### Get Habit
-- **Method:** GET
-- **Path:** /habits/{habit_id}
-- **Response Shape:**
-```json
-{
-    "id": "integer",
-    "name": "string",
-    "streak_count": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X GET http://localhost:8000/habits/1
-```
-
-### Get Habit Streak
-- **Method:** GET
-- **Path:** /habits/streak/{habit_id}
-- **Response Shape:**
-```json
-{
-    "habit_id": "integer",
-    "streak_count": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X GET http://localhost:8000/habits/streak/1
+curl -X GET http://localhost:8000/api/v1/teachers/1/dashboard
 ```
 
 ## Models
-### Habit
+### Quiz
 - **id**: Integer, primary key
-- **name**: String, not nullable
-- **streak_count**: Integer, default 0
-- **user_id**: Integer, foreign key to users, not nullable
+- **title**: String, not nullable
+- **teacher_id**: Integer, foreign key to teachers
+
+### Question
+- **id**: Integer, primary key
+- **quiz_id**: Integer, foreign key to quizzes
+- **text**: String, not nullable
+- **correct_answer_id**: Integer, foreign key to answers
+
+### Answer
+- **id**: Integer, primary key
+- **question_id**: Integer, foreign key to questions
+- **text**: String, not nullable
 
 ## Existing Sections
 ### Small Online Store
