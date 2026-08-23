@@ -1,5 +1,4 @@
-from your_project_name.db import models  # Changed to absolute import
-
+from db import models
 # Your test code here...
 def test_db():
     Base.metadata.create_all(bind=engine)

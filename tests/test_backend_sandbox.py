@@ -1,4 +1,4 @@
-from your_project_name.db.models import Product, Habit
+from db.models import Product, Habit
 # Your test code here...
 
 from db.models import Product, Habit  # Adjusted import to include Habit

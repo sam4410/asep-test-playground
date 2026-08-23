@@ -1,4 +1,4 @@
-from your_project_name.db.tasks import app
+from db.tasks import app
 # Your test code here...
 from db.models import Product
 from sqlalchemy import create_engine
