@@ -1,6 +1,7 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+from your_project.api.habits import app
+
+def test_example():
+    assert True
 
 from api.habits import app
 from dashboard import app

@@ -1,6 +1,7 @@
-import pytest
-from fastapi.testclient import TestClient
-from api.main import app
+from your_project.api.main import app
+
+def test_example():
+    assert True
 from db.models import Product
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

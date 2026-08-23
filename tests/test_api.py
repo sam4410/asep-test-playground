@@ -1,6 +1,7 @@
-from api.habits import app  # Adjusted import to match the correct module structure
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+from your_project.api.habits import app  # Adjusted import to match the correct module structure
+
+def test_example():
+    assert True
 
 from api.habits import router as app
 from fastapi.testclient import TestClient

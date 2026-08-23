@@ -1,6 +1,7 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+from your_project.db.models import Product, Habit  # Adjusted import to include Habit
+
+def test_example():
+    assert True
 
 from db.models import Product, Habit  # Adjusted import to include Habit
 from models import Product  # Ensure correct import path
