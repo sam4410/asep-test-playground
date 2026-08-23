@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from .models import Quiz, Question, Answer  # Adjusted import to use relative path
 from .database import get_db  # Adjusted import to use relative path
+from db.database import get_db  # Ensure the correct import path is used
 from pydantic import BaseModel
 
 router = APIRouter()
