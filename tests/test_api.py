@@ -1,6 +1,8 @@
-from api.main import app  # Adjusted import to match the correct module structure
 import pytest
 from fastapi.testclient import TestClient
+from app import app
+
+client = TestClient(app)
 
 def test_example():
     assert True

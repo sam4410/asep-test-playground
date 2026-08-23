@@ -1,6 +1,8 @@
-from your_project_name.db.models import Product
 import pytest
+from fastapi.testclient import TestClient
+from app.models import Product
 
+client = TestClient(app)
 
 class MockProductRepository:
     def __init__(self, products):
