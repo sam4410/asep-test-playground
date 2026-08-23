@@ -6,10 +6,14 @@ from .user import User  # Added import for User model
 class Teacher(Base):
     __tablename__ = 'teachers'
 
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
     teacher_id = Column(Integer, ForeignKey('teachers.id'))
+
+    questions = relationship("Question", back_populates="quiz")
+    teacher = relationship("Teacher")
+
+class Question(Base):
+    __tablename__ = 'questions'
+
 
     questions = relationship("Question", back_populates="quiz")
     teacher = relationship("Teacher")

@@ -1,4 +1,14 @@
-from db.models import Quiz, Question, Answer  # Adjusted import to use the correct path
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from ..db.models import Base, Quiz, Question, Answer
+from ..db.database import get_db
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+@pytest.fixture(scope="module")
 def db():
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
@@ -39,6 +49,25 @@ def test_create_answer(db):
     db.commit()
     db.refresh(question)
 
+    answer = Answer(text="4", question_id=question.id)
+    db.add(answer)
+    db.commit()
+    db.refresh(answer)
+    assert answer.id is not None
+    assert answer.text == "4"
+    assert answer.question_id == question.id
+
+def test_quiz_not_found(db):
+    quiz = db.query(Quiz).filter(Quiz.id == 999).first()
+    assert quiz is None
+
+def test_question_not_found(db):
+    question = db.query(Question).filter(Question.id == 999).first()
+    assert question is None
+
+def test_answer_not_found(db):
+    answer = db.query(Answer).filter(Answer.id == 999).first()
+    assert answer is None
     answer = Answer(text="4", question_id=question.id)
     db.add(answer)
     db.commit()
