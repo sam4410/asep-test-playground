@@ -1,6 +1,7 @@
-from main import app  # Adjusted import to match the correct module structure
-from fastapi.testclient import TestClient
-from main import app
+from asep.api.checkout import app  # Adjusted import to match the correct module structure
+import pytest
+
+# Add your test cases here
 from db.models import Expense
 from database import get_db
 from sqlalchemy import create_engine

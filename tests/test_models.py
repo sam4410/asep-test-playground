@@ -1,6 +1,7 @@
+from asep.api.models import Quiz, Question, Answer  # Removed Habit import as it is not used
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+
+# Add your test cases here
 from models import Quiz, Question, Answer
 from db.database import Base
 
