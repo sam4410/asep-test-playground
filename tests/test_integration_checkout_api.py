@@ -1,6 +1,7 @@
+import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from api.main import app
+
 from sqlalchemy.orm import sessionmaker
 from db.database import get_db, Base  # Ensure the correct import path is used
 
