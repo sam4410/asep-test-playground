@@ -1,8 +1,10 @@
-from api.db import db  # Adjusted import to use the correct path
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-# Your test code here
-from sqlalchemy.orm import sessionmaker
-from database import Base, get_db
+from api.db import db  # Adjusted import to use the correct path
+from fastapi.testclient import TestClient
+from api.main import app
+
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
