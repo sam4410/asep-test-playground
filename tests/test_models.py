@@ -1,8 +1,10 @@
-from .api.db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
+import pytest
+from db.api.db.models import Quiz, Question, Answer, Habit  # Adjusted import to match the correct module structure
 
-def test_models_functionality():
-    # Test models functionality here
-    from fastapi.testclient import TestClient
+@pytest.fixture(scope="module")
+def sample_data():
+    # Sample data creation logic here
+    pass
     return TestClient(app)
 from db.database import Base
 

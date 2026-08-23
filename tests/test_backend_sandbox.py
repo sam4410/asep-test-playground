@@ -1,15 +1,21 @@
-from .models import Product, Habit  # Adjusted import to use relative path
+import pytest
+from fastapi.testclient import TestClient
+from db.api.main import app
+from db.models import Product, Habit  # Adjusted import to match the correct module structure
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database import Base  # Adjusted import to match the correct module structure
+from db.database import get_db
 
-class MockProductRepository:
-    def __init__(self, products):
-        self.products = {product.id: product for product in products}
-
-    def get_product_by_id(self, product_id):
-        return self.products.get(product_id)
-
-def test_product_creation():
-    product = Product(id=1, name="Test Product", description="A product for testing", price=10.0, stock_quantity=100, category_id=1)
-    assert product.id == 1
+@pytest.fixture(scope="module")
+def test_db():
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    
+    yield TestingSessionLocal()
+    
+    Base.metadata.drop_all(engine)
     assert product.name == "Test Product"
     assert product.price == 10.0
     assert product.stock_quantity == 100

@@ -1,5 +1,8 @@
 import pytest
-from db.habits import app  # Adjusted import to match the correct module structure@pytest.fixture
+from fastapi.testclient import TestClient
+from db.database.main import app
+
+@pytest.fixture(scope="module")
 def client():
-    from fastapi.testclient import TestClient
-    return TestClient(app)
+    with TestClient(app) as c:
+        yield c

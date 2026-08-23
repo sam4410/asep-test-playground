@@ -1,5 +1,8 @@
-from .api.db.tasks import app  # Adjusted import to match the correct module structure
+import pytest
+from fastapi.testclient import TestClient
+from db.database import tasks
 
-def test_dashboard_functionality():
-    # Test dashboard functionality here
-    return TestClient(app)
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(tasks.app) as c:
+        yield c

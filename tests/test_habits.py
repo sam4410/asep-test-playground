@@ -1,4 +1,8 @@
-from .main import app  # Adjusted import to use relative path
+import pytest
+from fastapi.testclient import TestClient
+from db.database.tasks import app
+
+@pytest.fixture(scope="module")
 def client():
-    from fastapi.testclient import TestClient
-    return TestClient(app)
+    with TestClient(app) as c:
+        yield c
