@@ -1,4 +1,4 @@
-from models import Product, Habit  # Adjusted import to match the correct module structure
+from api.db.models import Product, Habit  # Adjusted import to match the correct module structure
 
 def test_example():
     assert True

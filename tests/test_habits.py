@@ -1,4 +1,4 @@
-from tasks import app  # Adjusted import to match the correct module structure
+from api.db.tasks import app  # Adjusted import to match the correct module structure
 
 def test_example():
     assert True

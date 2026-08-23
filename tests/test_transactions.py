@@ -1,5 +1,4 @@
-from api.main import app  # Adjusted import to match the correct module structure
-import pytest
+from api.db.main import app  # Adjusted import to match the correct module structureimport pytest
 
 # ... rest of the test code ...
 client = TestClient(app)

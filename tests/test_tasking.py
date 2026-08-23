@@ -1,4 +1,4 @@
-from db.models import Base, Task, TaskStatus  # Adjusted import to match the correct module structure
+from api.db.models import Base, Task, TaskStatus  # Adjusted import to match the correct module structure
 import pytest
 
 # ... rest of the test code ...
