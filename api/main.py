@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends, APIRouter
-from sqlalchemy.orm import Session
-from database import get_db
-from db.models import Task, User, Product
+from fastapi import FastAPI
+from db.database import get_db  # Ensure the correct import path is used
+from db.models import Base
+from routers import product, checkout
+
 from pydantic import BaseModel
 from datetime import datetime
 

@@ -1,8 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
-from database import Base  # Adjusted import to use absolute path
-from .user import User  # Added import for User model
+from sqlalchemy import Column, Integer, String, Float
+from db.database import Base  # Ensure the correct import path is used
 
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String)
+    price = Column(Float)
+    stock_quantity = Column(Integer)
 class Teacher(Base):
     __tablename__ = 'teachers'
 
