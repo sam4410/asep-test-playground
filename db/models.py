@@ -1,15 +1,18 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from .database import Base  # Adjusted import to use relative path
+from .user import User  # Added import for User model
 
-class Quiz(Base):
-    __tablename__ = 'quizzes'
+class Teacher(Base):
+    __tablename__ = 'teachers'
+
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     teacher_id = Column(Integer, ForeignKey('teachers.id'))
 
     questions = relationship("Question", back_populates="quiz")
+    teacher = relationship("Teacher")
 
 class Question(Base):
     __tablename__ = 'questions'
