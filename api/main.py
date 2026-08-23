@@ -1,3 +1,18 @@
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from db.models import Product
+from database import get_db
+from fastapi import APIRouter
+
+app = FastAPI()
+router = APIRouter()
+
+@router.get("/api/v1/products", response_model=list[Product])
+def get_products(db: Session = Depends(get_db)):
+    products = db.query(Product).all()
+    return products
+
+app.include_router(router)
 from fastapi import FastAPI, APIRouter, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session

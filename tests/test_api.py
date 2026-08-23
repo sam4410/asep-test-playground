@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app
+from main import app
 from db.models import Expense
 from database import get_db
 from sqlalchemy import create_engine
