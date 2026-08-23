@@ -1,6 +1,7 @@
-from your_project_name import db
+from your_project_name import db  # Ensure this path is correct
+import pytest
 
-# Your test code here
+# Your test cases here
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import Base, get_db

@@ -1,6 +1,7 @@
+from your_project_name.api import db  # Ensure this path is correct
 import pytest
-from fastapi.testclient import TestClient
-from your_project_name.api.main import app
+
+# Your test cases here
 from your_project_name.db.models import Product
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

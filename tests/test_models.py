@@ -1,3 +1,4 @@
-from your_project_name.db import models
+from your_project_name.api import db  # Ensure this path is correct
+import pytest
 
-# Your test code here
+# Your test cases here

@@ -1,6 +1,7 @@
-from your_project_name import db
+from your_project_name.api.db import models  # Ensure this path is correct
+import pytest
 
-# Your test code here
+# Your test cases here
 from api.habits import router as app
 from fastapi.testclient import TestClient
 client = TestClient(app)
