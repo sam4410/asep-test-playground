@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, APIRouter
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from db.models import Product, Category
 from database import get_db
+from db.models import Product
+from fastapi import APIRouter
+
+app = FastAPI()
+router = APIRouter()
 
 app = FastAPI()
 router = APIRouter()
@@ -111,5 +114,40 @@ def get_team_members(team_id: int):
     if team_id not in teams:
         raise HTTPException(status_code=404, detail="Team not found")
     return teams[team_id]["members"]
+
+app.include_router(router)
+
+@router.post("/api/v1/products", response_model=Product)
+def create_product(product: Product, db: Session = Depends(get_db)):
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product
+
+@router.get("/api/v1/products/{product_id}", response_model=Product)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+@router.put("/api/v1/products/{product_id}", response_model=Product)
+def update_product(product_id: int, product: Product, db: Session = Depends(get_db)):
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    for key, value in product.dict().items():
+        setattr(db_product, key, value)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@router.delete("/api/v1/products/{product_id}", status_code=204)
+def delete_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    db.delete(product)
+    db.commit()
 
 app.include_router(router)
