@@ -1,9 +1,19 @@
-from db.models import YourModel  # Adjusted import to use the correct path
-# Your test code here...
+from db import models
+from fastapi.testclient import TestClient
+from api.main import app
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import pytest
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+@pytest.fixture(scope="module")
 def test_db():
-    Base.metadata.create_all(bind=engine)
+    models.Base.metadata.create_all(bind=engine)
     yield TestingSessionLocal()
-    Base.metadata.drop_all(bind=engine)
+    models.Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture
 def client(test_db):
@@ -44,13 +54,24 @@ def test_create_task_invalid_assignee(client):
     })
     assert response.status_code == 422  # Unprocessable Entity
 
-def test_task_status_enum(client):
-    task = Task(
-        title="Enum Test Task",
-        description="Testing enum status.",
-        assignee_id=1,
-        status=TaskStatus.DONE
-    )
-    assert task.status == TaskStatus.DONE
-    assert task.status != TaskStatus.TODO
-    assert task.status != TaskStatus.IN_PROGRESS
+def test_get_tasks(client):
+    response = client.get("/api/v1/tasks")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+
+def test_get_tasks_with_filter(client):
+    response = client.get("/api/v1/tasks?assignee_id=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    for task in data:
+        assert task["assignee_id"] == 1
+
+def test_get_tasks_with_status_filter(client):
+    response = client.get("/api/v1/tasks?status=todo")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    for task in data:
+        assert task["status"] == "todo"
