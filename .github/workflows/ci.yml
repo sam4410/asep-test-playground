@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Cache pip
+      - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=api
+          pytest --cov=api tests/
 
   build:
     runs-on: ubuntu-latest
@@ -46,4 +46,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t personal-budget-tracker .
+          docker build -t student-quiz-platform .
