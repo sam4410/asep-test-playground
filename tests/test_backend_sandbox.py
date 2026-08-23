@@ -1,4 +1,4 @@
-from db.models import Product  # Adjusted import to match the correct module structure
+from your_project_name.db.models import Product
 import pytest
 
 
