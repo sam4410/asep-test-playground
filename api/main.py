@@ -26,10 +26,11 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @router.post("/login")
-def login(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.username == user.username, User.password == user.password).first()  # Password should be hashed in production
-    if not db_user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful"}
-
-app.include_router(router)
+@router.post("/expenses", response_model=ExpenseRetrieve)
+def create_expense(expense: ExpenseCreate, db: Session = Depends(get_db)):
+    db_expense = Expense(amount=expense.amount, category=expense.category, date=expense.date, user_id=expense.user_id)
+    db.add(db_expense)
+    db.commit()  # Commit the transaction to save the expense
+    db.refresh(db_expense)
+    return db_expense
+    return expenses
