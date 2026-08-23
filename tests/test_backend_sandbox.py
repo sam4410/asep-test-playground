@@ -1,7 +1,6 @@
-from .db.models import Product, Habit  # Adjusted import to use relative path
+from db.models import Product, Habit  # Changed to absolute import
 
-def test_example():
-    assert True
+# Your test code here...
 
 from db.models import Product, Habit  # Adjusted import to include Habit
 from models import Product  # Ensure correct import path

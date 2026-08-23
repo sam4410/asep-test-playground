@@ -1,1 +1,3 @@
-from .db.models import Base, Quiz, Question, Answer, Habit  # Adjusted import to use relative path
+from db.models import Base, Quiz, Question, Answer, Habit  # Changed to absolute import
+
+# Your test code here...

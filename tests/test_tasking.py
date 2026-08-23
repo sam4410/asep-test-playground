@@ -1,7 +1,6 @@
-from .db import models  # Adjusted import to use relative path
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from db import models  # Changed to absolute import
 
-@pytest.fixture(scope="module")
+# Your test code here...
 def test_db():
     Base.metadata.create_all(bind=engine)
     yield TestingSessionLocal()

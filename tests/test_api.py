@@ -1,7 +1,6 @@
-from .db.tasks import app  # Adjusted import to use relative path
+from db.tasks import app  # Changed to absolute import
 
-def test_example():
-    assert True
+# Your test code here...
 
 from api.habits import router as app
 from fastapi.testclient import TestClient
