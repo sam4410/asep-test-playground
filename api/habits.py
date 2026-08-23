@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from db.models import Habit, User
+from .models import Habit, User  # Adjusted import to be relative
 from database import get_db
 from pydantic import BaseModel
 
@@ -38,6 +38,7 @@ def get_habit_streak(habit_id: int, db: Session = Depends(get_db), user: User = 
     habit = db.query(Habit).filter(Habit.id == habit_id, Habit.user_id == user.id).first()
     if not habit:
         raise HTTPException(status_code=404, detail="Habit not found")
+    return {"habit_id": habit.id, "streak_count": habit.streak_count}
     return {"habit_id": habit.id, "streak_count": habit.streak_count}
 def get_current_user():
     # Placeholder for user authentication logic
