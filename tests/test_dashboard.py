@@ -1,6 +1,6 @@
-import pytest
-from fastapi.testclient import TestClient
-from app.dashboard import app
+from dashboard import app
+
+# ... rest of the test code ...
 from db.models import Expense, Budget
 from sqlalchemy.orm import Session
 from database import get_db

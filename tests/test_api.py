@@ -1,6 +1,6 @@
-import pytest
-from fastapi.testclient import TestClient
-from app import app
+from transactions import app  # Adjusted import to match the correct module structure
+
+# ... rest of the test code ...
 
 client = TestClient(app)
 

@@ -1,6 +1,6 @@
-import pytest
-from fastapi.testclient import TestClient
-from app.models import Product
+from models import Product  # Ensure correct import path
+
+# ... rest of the test code ...
 
 client = TestClient(app)
 
