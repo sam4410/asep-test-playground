@@ -1,5 +1,5 @@
-# Personal Budget Tracker
-A web application for individuals to track personal expenses and manage budgets effortlessly.
+# Small Online Store
+A simple web application for a small business to manage an online storefront, including product catalog, shopping cart, and checkout functionality.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
@@ -10,119 +10,81 @@ A web application for individuals to track personal expenses and manage budgets 
 
 ## API Endpoints
 
-### User Signup
+### Create Product
 - **Method:** POST
-- **Path:** /signup
+- **Path:** /api/v1/products
 - **Request Body:**
 ```json
 {
-    "username": "string",
-    "password": "string"
+    "name": "string",
+    "description": "string",
+    "price": "float",
+    "stock_quantity": "integer"
 }
 ```
 - **Response Shape:**
 ```json
 {
-    "username": "string"
+    "id": "integer",
+    "name": "string",
+    "description": "string",
+    "price": "float",
+    "stock_quantity": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X POST http://localhost:8000/signup -H "Content-Type: application/json" -d '{"username": "user1", "password": "password123"}'
+curl -X POST http://localhost:8000/api/v1/products -H "Content-Type: application/json" -d '{"name": "Test Product", "description": "A product for testing", "price": 10.99, "stock_quantity": 100}'
 ```
 
-### User Login
-- **Method:** POST
-- **Path:** /login
-- **Request Body:**
-```json
-{
-    "username": "string",
-    "password": "string"
-}
-```
-- **Response Shape:**
-```json
-{
-    "message": "Login successful"
-}
-```
-- **Curl Example:**
-```bash
-curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "user1", "password": "password123"}'
-```
-
-### Create Expense
-- **Method:** POST
-- **Path:** /expenses
-- **Request Body:**
-```json
-{
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "user_id": "integer"
-}
-```
-- **Response Shape:**
-```json
-{
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "user_id": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X POST http://localhost:8000/expenses -H "Content-Type: application/json" -d '{"amount": 1000, "category": "Food", "date": "2023-10-01", "user_id": 1}'
-```
-
-### Read Expense
+### Get Product
 - **Method:** GET
-- **Path:** /expenses/{expense_id}
+- **Path:** /api/v1/products/{product_id}
 - **Response Shape:**
 ```json
 {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "user_id": "integer"
+    "id": "integer",
+    "name": "string",
+    "description": "string",
+    "price": "float",
+    "stock_quantity": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X GET http://localhost:8000/expenses/1
+curl -X GET http://localhost:8000/api/v1/products/1
 ```
 
-### Update Expense
+### Update Product
 - **Method:** PUT
-- **Path:** /expenses/{expense_id}
+- **Path:** /api/v1/products/{product_id}
 - **Request Body:**
 ```json
 {
-    "amount": "integer",
-    "category": "string",
-    "date": "string"
+    "name": "string",
+    "description": "string",
+    "price": "float",
+    "stock_quantity": "integer"
 }
 ```
 - **Response Shape:**
 ```json
 {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "user_id": "integer"
+    "id": "integer",
+    "name": "string",
+    "description": "string",
+    "price": "float",
+    "stock_quantity": "integer"
 }
 ```
 - **Curl Example:**
 ```bash
-curl -X PUT http://localhost:8000/expenses/1 -H "Content-Type: application/json" -d '{"amount": 1500, "category": "Groceries", "date": "2023-10-02"}'
+curl -X PUT http://localhost:8000/api/v1/products/1 -H "Content-Type: application/json" -d '{"name": "Updated Product", "description": "An updated product", "price": 12.99, "stock_quantity": 50}'
 ```
 
-### Delete Expense
+### Delete Product
 - **Method:** DELETE
-- **Path:** /expenses/{expense_id}
+- **Path:** /api/v1/products/{product_id}
 - **Response Shape:**
 ```json
 {
@@ -131,171 +93,43 @@ curl -X PUT http://localhost:8000/expenses/1 -H "Content-Type: application/json"
 ```
 - **Curl Example:**
 ```bash
-curl -X DELETE http://localhost:8000/expenses/1
+curl -X DELETE http://localhost:8000/api/v1/products/1
 ```
 
-### Get Expenses
-- **Method:** GET
-- **Path:** /expenses
-- **Query Parameters:** `category`, `start_date`, `end_date`
-- **Response Shape:**
-```json
-[
-    {
-        "amount": "integer",
-        "category": "string",
-        "date": "string",
-        "user_id": "integer"
-    }
-]
-```
-- **Curl Example:**
-```bash
-curl -X GET "http://localhost:8000/expenses?category=Food"
-```
-
-### Dashboard
-- **Method:** GET
-- **Path:** /dashboard
-- **Query Parameters:** `user_id`
-- **Response Shape:**
-```json
-{
-    "total_spent": "integer",
-    "category_breakdown": {
-        "category": "integer"
-    }
-}
-```
-- **Curl Example:**
-```bash
-curl -X GET "http://localhost:8000/dashboard?user_id=1"
-```
-
-### Create Budget
+### Checkout
 - **Method:** POST
-- **Path:** /budgets
+- **Path:** /api/v1/checkout
 - **Request Body:**
 ```json
 {
-    "category": "string",
-    "amount": "integer",
-    "user_id": "integer"
-}
-```
-- **Response Shape:**
-```json
-{
-    "category": "string",
-    "amount": "integer",
-    "user_id": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X POST http://localhost:8000/budgets -H "Content-Type: application/json" -d '{"category": "Food", "amount": 5000, "user_id": 1}'
-```
-
-### Get Budgets
-- **Method:** GET
-- **Path:** /budgets/{user_id}
-- **Response Shape:**
-```json
-[
-    {
-        "category": "string",
-        "amount": "integer",
-        "user_id": "integer"
-    }
-]
-```
-- **Curl Example:**
-```bash
-curl -X GET http://localhost:8000/budgets/1
-```
-
-### Update Budget
-- **Method:** PUT
-- **Path:** /budgets/{budget_id}
-- **Request Body:**
-```json
-{
-    "amount": "integer"
-}
-```
-- **Response Shape:**
-```json
-{
-    "category": "string",
-    "amount": "integer",
-    "user_id": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X PUT http://localhost:8000/budgets/1 -H "Content-Type: application/json" -d '{"amount": 6000}'
-```
-
-### Delete Budget
-- **Method:** DELETE
-- **Path:** /budgets/{budget_id}
-- **Response Shape:**
-```json
-{
-    "detail": "string"
-}
-```
-- **Curl Example:**
-```bash
-curl -X DELETE http://localhost:8000/budgets/1
-```
-
-### Check Budget
-- **Method:** GET
-- **Path:** /budgets/check/{user_id}
-- **Response Shape:**
-```json
-{
-    "total_spent": "integer"
-}
-```
-- **Curl Example:**
-```bash
-curl -X GET http://localhost:8000/budgets/check/1
-```
-
-### Budget Status
-- **Method:** GET
-- **Path:** /budgets/status/{user_id}
-- **Response Shape:**
-```json
-{
-    "budgets": [
+    "items": [
         {
-            "category": "string",
-            "amount": "integer",
-            "user_id": "integer"
+            "product_id": "integer",
+            "quantity": "integer"
         }
     ]
 }
 ```
+- **Response Shape:**
+```json
+{
+    "message": "string",
+    "total": "float"
+}
+```
 - **Curl Example:**
 ```bash
-curl -X GET http://localhost:8000/budgets/status/1
+curl -X POST http://localhost:8000/api/v1/checkout -H "Content-Type: application/json" -d '{"items": [{"product_id": 1, "quantity": 2}]}'
 ```
 
 ## Models
 
-### Expense
-- **amount**: Integer, amount in cents
-- **category**: String, category of the expense
-- **date**: String, date of the expense
-- **user_id**: Integer, foreign key to user
-
-### Budget
-- **category**: String, category of the budget
-- **amount**: Integer, budget amount in cents
-- **user_id**: Integer, foreign key to user
+### Product
+- **id**: Integer, primary key
+- **name**: String, product name
+- **description**: String, product description
+- **price**: Float, product price
+- **stock_quantity**: Integer, available stock quantity
 
 ## Existing Sections
 ### Small Online Store
