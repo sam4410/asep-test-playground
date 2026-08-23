@@ -5,6 +5,7 @@ from database import get_db
 from pydantic import BaseModel
 from passlib.context import CryptContext
 
+
 app = FastAPI()
 
 class UserCreate(BaseModel):
