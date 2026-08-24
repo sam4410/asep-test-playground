@@ -79,3 +79,8 @@ if not os.path.exists(static_directory):
     os.makedirs(static_directory)
 
 app.mount("/", StaticFiles(directory=static_directory, html=True), name="static")
+
+app = FastAPI()
+
+if os.path.exists("static"):  # Check if the static directory exists
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
