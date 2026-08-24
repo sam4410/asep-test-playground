@@ -1,15 +1,21 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from asep.db.models import Quiz, User
+from asep.db.models import Quiz, QuizSubmission, User
 from asep.db.database import get_db
 from pydantic import BaseModel
 from uuid import UUID
+from datetime import datetime
 
 router = APIRouter()
 
 class QuizCreate(BaseModel):
     title: str
     questions: list
+
+class QuizSubmissionCreate(BaseModel):
+    quiz_id: UUID
+    student_id: UUID
+    answers: list
 
 @router.post("/quizzes/", response_model=Quiz)
 def create_quiz(quiz: QuizCreate, teacher_id: UUID, db: Session = Depends(get_db)):
@@ -25,13 +31,51 @@ def create_quiz(quiz: QuizCreate, teacher_id: UUID, db: Session = Depends(get_db
 
     return new_quiz
 
+@router.post("/quizzes/submit/", response_model=QuizSubmission)
+def submit_quiz(submission: QuizSubmissionCreate, db: Session = Depends(get_db)):
+    # Check if the quiz exists
+    quiz = db.query(Quiz).filter(Quiz.id == submission.quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+    
+    # Calculate score
+    correct_answers = 0
+    for question, answer in zip(quiz.questions, submission.answers):
+        if question['correct_answer'] == answer:
+            correct_answers += 1
+    
+    score = correct_answers / len(quiz.questions) * 100 if quiz.questions else 0
+    new_submission = QuizSubmission(
+        quiz_id=submission.quiz_id,
+        student_id=submission.student_id,
+        answers=submission.answers,
+        score=score,  # Store the calculated score
+        submitted_at=datetime.utcnow()
+    )
+    db.add(new_submission)
+    db.commit()
+    db.refresh(new_submission)
+    
+    return {"submission": new_submission, "score": score}
+
+@router.get("/quizzes/submit/{submission_id}", response_model=QuizSubmission)
+def get_quiz_submission(submission_id: UUID, db: Session = Depends(get_db)):
+    submission = db.query(QuizSubmission).filter(QuizSubmission.id == submission_id).first()
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    return submission
+
+@router.get("/quizzes/")
+def list_quizzes(db: Session = Depends(get_db)):
+    quizzes = db.query(Quiz).all()
+    return quizzes
+
 @router.get("/quizzes/{quiz_id}", response_model=Quiz)
 def read_quiz(quiz_id: UUID, db: Session = Depends(get_db)):
     quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
     return quiz
-
 @router.get("/quizzes/")
 def list_quizzes(db: Session = Depends(get_db)):
     quizzes = db.query(Quiz).all()

@@ -1,9 +1,13 @@
-import sys
-import os
-from datetime import datetime
+import pytest
 from fastapi.testclient import TestClient
-from fastapi import FastAPI
 from asep.api.main import app
+from asep.db.database import get_db  # Ensure correct import for database session
+
+client = TestClient(app)
+
+@pytest.fixture
+def override_get_db():
+    pass  # Implement a mock database session for testing
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
 
