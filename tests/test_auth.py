@@ -1,6 +1,6 @@
-from asep.api.auth import router as auth_router  # Ensure correct import path
+import sys
 import pytest
-import os
+from api.auth import router as auth_router  # Ensure correct import path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 

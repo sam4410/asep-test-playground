@@ -1,5 +1,4 @@
-from asep.api.main import app  # Corrected import statement to reflect the correct module path
+import sys
 import pytest
-import os
-
+from api.main import app  # Ensure correct import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))

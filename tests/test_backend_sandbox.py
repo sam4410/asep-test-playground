@@ -1,6 +1,6 @@
 import sys
-import os
-from datetime import datetime
+import pytest
+from api.dashboard import router as include_router  # Ensure correct import path
 from fastapi.testclient import TestClient
 from asep.api.main import app
 from asep.db.models import HabitModel

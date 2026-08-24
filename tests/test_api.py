@@ -1,6 +1,6 @@
-from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+import sys
 import pytest
-import os
+from api.dashboard import router as include_router  # Ensure correct import path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
