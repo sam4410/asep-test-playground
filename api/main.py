@@ -2,6 +2,8 @@ from fastapi import FastAPI, APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from db.models import Product, OrderHistory
 from database import get_db
+from pydantic import BaseModel
+from datetime import datetime
 
 app = FastAPI()
 router = APIRouter()
@@ -41,6 +43,37 @@ if __name__ == "__main__":
 
     return {"message": "Item added to cart", "cart_item": cart_item}
 
+class CheckoutRequest(BaseModel):
+    user_id: int
+    cart_items: list[dict]  # List of dictionaries with product_id and quantity
+
+@router.post("/checkout")
+def checkout(request: CheckoutRequest, db: Session = Depends(get_db)):
+    # Validate cart items and calculate total
+    total_amount = 0
+    for item in request.cart_items:
+        product = db.query(Product).filter(Product.id == item['product_id']).first()
+        if not product or product.stock < item['quantity']:
+            raise HTTPException(status_code=400, detail=f"Insufficient stock for product ID {item['product_id']}")
+        total_amount += product.price * item['quantity']
+
+    # Create order history entries
+    for item in request.cart_items:
+        order = OrderHistory(
+            user_id=request.user_id,
+            product_id=item['product_id'],
+            quantity=item['quantity'],
+            order_date=datetime.now().isoformat(),
+            status='pending'
+        )
+        db.add(order)
+        # Update product stock
+        product.stock -= item['quantity']
+    
+    db.commit()
+    
+    return {"message": "Order created successfully", "total_amount": total_amount}
+    
 app.include_router(router, prefix="/api/v1")
 
 if __name__ == "__main__":
