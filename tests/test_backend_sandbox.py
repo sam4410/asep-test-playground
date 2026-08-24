@@ -1,6 +1,8 @@
-import sys
-import os
-# Adjust the import to reflect the correct module path
+from asep.api.expenses import router  # Corrected import statement to reflect the correct module path
+
+def test_expense_creation(client):
+    # Your test implementation here
+    pass
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
 from asep.api.expenses import router
 from asep.db.models import Expense  # Ensure this import is correct

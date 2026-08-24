@@ -67,5 +67,5 @@ def delete_question(question_id: int, db: Session = Depends(get_db)):
 
     return {"detail": "Question deleted successfully"}
 
-def include_router(app):
-    app.include_router(router)
+def include_router(app):  # Ensure this function is included in the correct module
+    app.include_router(router)  # No prefix added to avoid conflicts with existing routes

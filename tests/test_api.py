@@ -1,6 +1,8 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep/api')))
+from asep.main import app  # Corrected import statement to reflect the correct module path
+
+def test_create_question(client):
+    # Your test implementation here
+    pass
 from asep.api.main import app  # Adjusted import statement to reflect the correct module path
 from asep.db.models import Product, ShoppingCart, CartItem, OrderHistory
 from sqlalchemy.orm import Session
