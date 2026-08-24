@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from db.models import User
 from db.database import get_db
-from pydantic import BaseModel
-from passlib.context import CryptContext
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -23,21 +23,15 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return {"id": db_user.id, "username": db_user.username}
+    return {"message": "User created successfully", "username": db_user.username, "id": db_user.id}
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.username == user.username).first()
     if not db_user or not pwd_context.verify(user.password, db_user.password):
         raise HTTPException(status_code=400, detail="Invalid username or password")
-    return {"id": db_user.id, "username": db_user.username}
+    return {"message": "Login successful", "username": db_user.username, "id": db_user.id}
 
-@router.get("/users/{user_id}")
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"id": db_user.id, "username": db_user.username}
 
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
