@@ -1,9 +1,53 @@
 import pytest
 from fastapi.testclient import TestClient
-from asep.api.main import app
+from src.asep.main import app  # Corrected import statement to reflect the correct module path
 from asep.db.database import get_db  # Ensure correct import for database session
 
-client = TestClient(app)
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c
+
+def test_create_quiz(client):
+    response = client.post("/quizzes/", json={"title": "Sample Quiz", "questions": []}, params={"teacher_id": "some-teacher-id"})
+    assert response.status_code == 200
+    assert response.json()["title"] == "Sample Quiz"
+def test_submit_quiz(client):
+    # First, create a quiz
+    quiz_response = client.post("/quizzes/", json={"title": "Sample Quiz", "questions": [{"question_text": "What is 2 + 2?", "correct_answer": 4}]}, params={"teacher_id": "some-teacher-id"})
+    assert quiz_response.status_code == 200
+    quiz_id = quiz_response.json()["id"]
+
+    # Now, submit answers for the quiz
+    submission_response = client.post("/quizzes/submit/", json={
+        "quiz_id": quiz_id,
+        "student_id": "some-student-id",
+        "answers": [4]  # Correct answer
+    })
+    assert submission_response.status_code == 200
+    assert "score" in submission_response.json()
+    assert submission_response.json()["score"] == 100.0  # Assuming 1 question and correct answer
+def test_get_quiz_submission(client):
+    # First, create a quiz and submit it
+    quiz_response = client.post("/quizzes/", json={"title": "Sample Quiz", "questions": [{"question_text": "What is 2 + 2?", "correct_answer": 4}]}, params={"teacher_id": "some-teacher-id"})
+    quiz_id = quiz_response.json()["id"]
+    submission_response = client.post("/quizzes/submit/", json={
+        "quiz_id": quiz_id,
+        "student_id": "some-student-id",
+        "answers": [4]
+    })
+    submission_id = submission_response.json()["submission"]["id"]
+
+    # Now, get the quiz submission
+    get_submission_response = client.get(f"/quizzes/submit/{submission_id}")
+    assert get_submission_response.status_code == 200
+    assert get_submission_response.json()["id"] == submission_id
+    assert get_submission_response.json()["quiz_id"] == quiz_id
+def test_list_quizzes(client):
+    response = client.get("/quizzes/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)  # Ensure it's a list
+    assert len(response.json()) > 0  # Ensure there is at least one quiz
 
 @pytest.fixture
 def override_get_db():
