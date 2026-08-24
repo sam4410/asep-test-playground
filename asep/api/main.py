@@ -1,9 +1,14 @@
 from fastapi import FastAPI
-from starlette.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
+from asep.api import router
 import os
 
-app = FastAPI()
+static_directory = "static"
+if not os.path.exists(static_directory):
+    os.makedirs(static_directory)
 
+app = FastAPI()
+app.mount("/static", StaticFiles(directory=static_directory, html=True), name="static")
 # Ensure the static directory exists before mounting
 if os.path.exists("static"):
     app.mount("/", StaticFiles(directory="static", html=True), name="static")
