@@ -1,11 +1,11 @@
-# Personal Budget Tracker
-A simple web application to help individuals track their personal expenses and manage budgets effectively.
+# Online Quiz Platform
+An online quiz platform where teachers can create quizzes and students can take them.
 
 ## Setup
 1. Clone the repository:
    ```
    git clone <repository-url>
-   cd personal-budget-tracker
+   cd online-quiz-platform
    ```
 2. Install Python dependencies:
    ```
@@ -13,429 +13,285 @@ A simple web application to help individuals track their personal expenses and m
    ```
 3. Run the application:
    ```
-   python api/main.py
+   python asep/api/main.py
    ```
 
 ## API Endpoints
 
-### User Signup
+### Create Quiz
 - **Method:** POST
-- **Path:** /signup
+- **Path:** /quizzes/
 - **Request Body:**
   ```json
   {
-    "username": "string",
-    "password": "string"
+    "title": "string",
+    "questions": "list"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "message": "User created successfully",
-    "username": "string",
-    "id": "integer"
+    "id": "UUID",
+    "title": "string",
+    "questions": "list",
+    "teacher_id": "UUID"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/signup -H "Content-Type: application/json" -d '{"username": "testuser", "password": "testpass"}'
+  curl -X POST http://localhost:8000/quizzes/ -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": []}'
   ```
 
-### User Login
-- **Method:** POST
-- **Path:** /login
-- **Request Body:**
-  ```json
-  {
-    "username": "string",
-    "password": "string"
-  }
-  ```
+### Read Quiz
+- **Method:** GET
+- **Path:** /quizzes/{quiz_id}
 - **Response Shape:**
   ```json
   {
-    "message": "Login successful",
-    "username": "string",
-    "id": "integer"
+    "id": "UUID",
+    "title": "string",
+    "questions": "list",
+    "teacher_id": "UUID"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "testpass"}'
+  curl -X GET http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000
   ```
 
-### Create Transaction
-- **Method:** POST
-- **Path:** /transactions
-- **Request Body:**
-  ```json
-  {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "note": "string"
-  }
-  ```
+### List Quizzes
+- **Method:** GET
+- **Path:** /quizzes/
 - **Response Shape:**
   ```json
-  {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "note": "string"
-  }
+  [
+    {
+      "id": "UUID",
+      "title": "string",
+      "questions": "list",
+      "teacher_id": "UUID"
+    }
+  ]
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/transactions -H "Content-Type: application/json" -d '{"amount": 1000, "category": "Food", "date": "2023-10-01", "note": "Grocery shopping"}'
+  curl -X GET http://localhost:8000/quizzes/
   ```
 
-### Update Transaction
+### Update Quiz
 - **Method:** PUT
-- **Path:** /transactions/{transaction_id}
+- **Path:** /quizzes/{quiz_id}
 - **Request Body:**
   ```json
   {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "note": "string"
+    "title": "string",
+    "questions": "list"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "note": "string"
+    "id": "UUID",
+    "title": "string",
+    "questions": "list",
+    "teacher_id": "UUID"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X PUT http://localhost:8000/transactions/1 -H "Content-Type: application/json" -d '{"amount": 1500}'
+  curl -X PUT http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000 -H "Content-Type: application/json" -d '{"title": "Updated Quiz", "questions": []}'
   ```
 
-### Delete Transaction
+### Delete Quiz
 - **Method:** DELETE
-- **Path:** /transactions/{transaction_id}
+- **Path:** /quizzes/{quiz_id}
 - **Response Shape:**
   ```json
   {
-    "detail": "Transaction deleted successfully"
+    "detail": "Quiz deleted successfully"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X DELETE http://localhost:8000/transactions/1
+  curl -X DELETE http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000
   ```
 
-### Get Transactions
+### Create Question
+- **Method:** POST
+- **Path:** /questions/
+- **Request Body:**
+  ```json
+  {
+    "question_text": "string",
+    "question_type": "string",
+    "options": "list",
+    "correct_answer": "string",
+    "quiz_id": "UUID"
+  }
+  ```
+- **Response Shape:**
+  ```json
+  {
+    "id": "integer",
+    "question_text": "string",
+    "question_type": "string",
+    "options": "string",
+    "correct_answer": "string",
+    "quiz_id": "UUID"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X POST http://localhost:8000/questions/ -H "Content-Type: application/json" -d '{"question_text": "What is the capital of France?", "question_type": "multiple_choice", "options": ["Paris", "London", "Berlin"], "correct_answer": "Paris", "quiz_id": "123e4567-e89b-12d3-a456-426614174000"}'
+  ```
+
+### Read Question
 - **Method:** GET
-- **Path:** /transactions
+- **Path:** /questions/{question_id}
+- **Response Shape:**
+  ```json
+  {
+    "id": "integer",
+    "question_text": "string",
+    "question_type": "string",
+    "options": "string",
+    "correct_answer": "string",
+    "quiz_id": "UUID"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X GET http://localhost:8000/questions/1
+  ```
+
+### List Questions
+- **Method:** GET
+- **Path:** /questions/
 - **Response Shape:**
   ```json
   [
     {
-      "amount": "integer",
-      "category": "string",
-      "date": "string",
-      "note": "string"
+      "id": "integer",
+      "question_text": "string",
+      "question_type": "string",
+      "options": "string",
+      "correct_answer": "string",
+      "quiz_id": "UUID"
     }
   ]
   ```
 - **Curl Example:**
   ```
-  curl -X GET http://localhost:8000/transactions
+  curl -X GET http://localhost:8000/questions/
   ```
 
-### Get Transaction by ID
-- **Method:** GET
-- **Path:** /transactions/{transaction_id}
-- **Response Shape:**
-  ```json
-  {
-    "amount": "integer",
-    "category": "string",
-    "date": "string",
-    "note": "string"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/transactions/1
-  ```
-
-### Dashboard Data
-- **Method:** GET
-- **Path:** /dashboard
-- **Response Shape:**
-  ```json
-  {
-    "total_spent": "integer",
-    "category_breakdown": {
-      "category": "total"
-    }
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/dashboard
-  ```
-
-### Create Budget
-- **Method:** POST
-- **Path:** /budgets/
-- **Request Body:**
-  ```json
-  {
-    "category": "string",
-    "monthly_budget": "integer"
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "category": "string",
-    "monthly_budget": "integer"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X POST http://localhost:8000/budgets/ -H "Content-Type: application/json" -d '{"category": "Food", "monthly_budget": 5000}'
-  ```
-
-### Update Budget
+### Update Question
 - **Method:** PUT
-- **Path:** /budgets/{category}
+- **Path:** /questions/{question_id}
 - **Request Body:**
   ```json
   {
-    "monthly_budget": "integer"
+    "question_text": "string",
+    "question_type": "string",
+    "options": "list",
+    "correct_answer": "string"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "monthly_budget": "integer"
+    "id": "integer",
+    "question_text": "string",
+    "question_type": "string",
+    "options": "string",
+    "correct_answer": "string",
+    "quiz_id": "UUID"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X PUT http://localhost:8000/budgets/Food -H "Content-Type: application/json" -d '{"monthly_budget": 6000}'
+  curl -X PUT http://localhost:8000/questions/1 -H "Content-Type: application/json" -d '{"question_text": "Updated Question", "question_type": "multiple_choice", "options": ["Paris", "London", "Berlin"], "correct_answer": "Paris"}'
   ```
 
-### Get Budget by Category
-- **Method:** GET
-- **Path:** /budgets/{category}
+### Delete Question
+- **Method:** DELETE
+- **Path:** /questions/{question_id}
 - **Response Shape:**
   ```json
   {
-    "category": "string",
-    "monthly_budget": "integer"
+    "detail": "Question deleted successfully"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X GET http://localhost:8000/budgets/Food
+  curl -X DELETE http://localhost:8000/questions/1
   ```
 
-### Get All Budgets
-- **Method:** GET
-- **Path:** /budgets/
-- **Response Shape:**
+### Submit Quiz
+- **Method:** POST
+- **Path:** /quizzes/submit
+- **Request Body:**
   ```json
   {
-    "budgets": [
-      {
-        "category": "string",
-        "monthly_budget": "integer"
-      }
-    ]
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/budgets/
-  ```
-
-### Filter Transactions
-- **Method:** GET
-- **Path:** /transactions/filter
-- **Query Parameters:**
-  - category: string (optional)
-  - start_date: string (optional)
-  - end_date: string (optional)
-- **Response Shape:**
-  ```json
-  [
-    {
-      "amount": "integer",
-      "category": "string",
-      "date": "string",
-      "note": "string"
+    "quiz_id": "UUID",
+    "student_id": "UUID",
+    "answers": {
+      "question_id": "string"
     }
-  ]
+  }
+  ```
+- **Response Shape:**
+  ```json
+  {
+    "detail": "Quiz submitted successfully"
+  }
   ```
 - **Curl Example:**
   ```
-  curl -X GET "http://localhost:8000/transactions/filter?category=Food&start_date=2023-10-01&end_date=2023-10-31"
+  curl -X POST http://localhost:8000/quizzes/submit -H "Content-Type: application/json" -d '{"quiz_id": "123e4567-e89b-12d3-a456-426614174000", "student_id": "123e4567-e89b-12d3-a456-426614174001", "answers": {"1": "Paris"}}'
+  ```
+
+### Get Quiz Results
+- **Method:** GET
+- **Path:** /quizzes/{quiz_id}/results
+- **Response Shape:**
+  ```json
+  {
+    "quiz_id": "UUID",
+    "results": {
+      "student_id": "UUID",
+      "score": "integer"
+    }
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X GET http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000/results
   ```
 
 ## Models
 
-### User
+### Quiz
+- **Fields:**
+  - id: UUID
+  - title: string
+  - questions: list
+  - teacher_id: UUID
+
+### Question
 - **Fields:**
   - id: integer
-  - username: string
-  - password: string (hashed)
+  - question_text: string
+  - question_type: string
+  - options: string
+  - correct_answer: string
+  - quiz_id: UUID
 
-### Transaction
+### QuizSubmission
 - **Fields:**
-  - id: integer
-  - amount: integer (in cents)
-  - category: string
-  - date: string (ISO format)
-  - note: string (optional)
-
-### Budget
-- **Fields:**
-  - id: integer
-  - category: string
-  - monthly_budget: integer (in cents)
-
-## Setup
-1. Clone the repository: `git clone <repository-url>`
-2. Navigate to the project directory: `cd <project-directory>`
-3. Install dependencies: `pip install -r requirements.txt`
-4. Set up the database: Follow the instructions in the database setup documentation.
-5. Run the application: `python asep/api/main.py` (or the appropriate command for your setup).
-
-## API Endpoints
-
-### Get Products
-- **Method:** GET
-- **Path:** /api/v1/products
-- **Response Shape:**
-  ```json
-  [
-    {
-      "id": "integer",
-      "name": "string",
-      "description": "string",
-      "price": "float",
-      "stock": "integer"
-    }
-  ]
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X GET http://localhost:8000/api/v1/products
-  ```
-
-### Add to Cart
-- **Method:** POST
-- **Path:** /api/v1/cart/add
-- **Request Body:**
-  ```json
-  {
-    "user_id": "integer",
-    "product_id": "integer",
-    "quantity": "integer"
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "message": "string",
-    "cart_item": {
-      "id": "integer",
-      "cart_id": "integer",
-      "product_id": "integer",
-      "quantity": "integer"
-    }
-  }
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X POST http://localhost:8000/api/v1/cart/add -H "Content-Type: application/json" -d '{"user_id": 1, "product_id": 1, "quantity": 2}'
-  ```
-
-### Get Order History
-- **Method:** GET
-- **Path:** /api/v1/orders
-- **Query Parameters:** `user_id` (integer)
-- **Response Shape:**
-  ```json
-  [
-    {
-      "id": "integer",
-      "user_id": "integer",
-      "product_id": "integer",
-      "quantity": "integer",
-      "order_date": "string",
-      "status": "string"
-    }
-  ]
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X GET "http://localhost:8000/api/v1/orders?user_id=1"
-  ```
-
-### Checkout
-- **Method:** POST
-- **Path:** /api/v1/checkout
-- **Request Body:**
-  ```json
-  {
-    "user_id": "integer",
-    "cart_items": [
-      {
-        "product_id": "integer",
-        "quantity": "integer"
-      }
-    ]
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "message": "string",
-    "total_amount": "float"
-  }
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X POST http://localhost:8000/api/v1/checkout -H "Content-Type: application/json" -d '{"user_id": 1, "cart_items": [{"product_id": 1, "quantity": 2}]}'
-  ```
-
-## Models
-
-### Product
-- `id`: Integer
-- `name`: String
-- `description`: String
-- `price`: Float
-- `stock`: Integer
-
-### ShoppingCart
-- `id`: Integer
-- `user_id`: Integer
-
-### CartItem
-- `id`: Integer
-- `cart_id`: Integer
-- `product_id`: Integer
-- `quantity`: Integer
-
-### OrderHistory
-- `id`: Integer
-- `user_id`: Integer
-- `product_id`: Integer
-- `quantity`: Integer
-- `order_date`: String (ISO 8601 format)
-- `status`: String
+  - quiz_id: UUID
+  - student_id: UUID
+  - answers: dict
 
 ## Existing Sections
 # asep-test-playground
