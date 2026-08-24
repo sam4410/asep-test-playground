@@ -1,99 +1,68 @@
-# Student Quiz Platform
-A web application for teachers to create quizzes and track student performance without the complexity of a full learning-management system.
+# Habit Tracker App
+A web application for users to log daily habits and track their streaks.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
 2. Navigate to the project directory: `cd <project-directory>`
 3. Install dependencies: `pip install -r requirements.txt`
 4. Set up the database: Follow the instructions in the database setup documentation.
-5. Run the application: `python api/main.py` (or the appropriate command for your setup).
+5. Run the application: `python asep/api/main.py` (or the appropriate command for your setup).
 
 ## API Endpoints
 
-### Create Quiz
+### Log Habit
 - **Method:** POST
-- **Path:** /quizzes/
+- **Path:** /api/habits/log
 - **Request Body:**
   ```json
   {
-    "title": "string",
-    "questions": []
+    "user_id": "string",
+    "habit_name": "string",
+    "log_date": "string" (optional, ISO 8601 format)
   }
   ```
 - **Response Shape:**
   ```json
   {
     "id": "string",
-    "title": "string",
-    "teacher_id": "string",
-    "created_at": "string",
-    "questions": []
+    "user_id": "string",
+    "habit_name": "string",
+    "log_date": "string"
   }
   ```
 - **Curl Example:**
   ```bash
-  curl -X POST http://localhost:8000/quizzes/ -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": []}' --data-urlencode "teacher_id=some-teacher-id"
+  curl -X POST http://localhost:8000/api/habits/log -H "Content-Type: application/json" -d '{"user_id": "test_user", "habit_name": "Exercise", "log_date": "2023-10-01T00:00:00Z"}'
   ```
 
-### Get Quiz by ID
+### Get Habits
 - **Method:** GET
-- **Path:** /quizzes/{quiz_id}
-- **Response Shape:**
-  ```json
-  {
-    "id": "string",
-    "title": "string",
-    "teacher_id": "string",
-    "created_at": "string",
-    "questions": []
-  }
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X GET http://localhost:8000/quizzes/some-quiz-id
-  ```
-
-### List Quizzes
-- **Method:** GET
-- **Path:** /quizzes/
+- **Path:** /api/habits/
+- **Query Parameters:** `user_id` (string)
 - **Response Shape:**
   ```json
   [
     {
       "id": "string",
-      "title": "string",
-      "teacher_id": "string",
-      "created_at": "string",
-      "questions": []
+      "user_id": "string",
+      "habit_name": "string",
+      "log_date": "string"
     }
   ]
   ```
 - **Curl Example:**
   ```bash
-  curl -X GET http://localhost:8000/quizzes/
+  curl -X GET "http://localhost:8000/api/habits/?user_id=test_user"
   ```
 
 ## Models
 
-### User
+### HabitModel
 - `id`: UUID
-- `username`: string
-- `password`: string
-- `role`: string (values: "teacher", "student")
-
-### Quiz
-- `id`: UUID
-- `title`: string
-- `teacher_id`: UUID
-- `created_at`: datetime
-- `questions`: list (JSON format)
-
-### QuizSubmission
-- `id`: UUID
-- `quiz_id`: UUID
-- `student_id`: UUID
-- `answers`: list (JSON format)
-- `submitted_at`: datetime
+- `user_id`: string
+- `habit_name`: string
+- `log_date`: datetime
+- `streak_count`: integer
 
 ## Existing Sections
 # asep-test-playground
