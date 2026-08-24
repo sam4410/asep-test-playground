@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from db.models import Task, User
-from db.database import get_db
+from .models import Task, User  # Use relative import
+from .database import get_db  # Use relative import
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -58,6 +58,43 @@ def get_user_tasks(user_id: UUID, db: Session = Depends(get_db)):
     tasks = db.query(Task).filter(Task.assignee_id == user_id).all()
     return tasks
 
+@router.delete("/tasks/{task_id}", response_model=dict)
+def delete_task(task_id: UUID, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db.delete(task)
+    db.commit()
+
+    return {"detail": "Task deleted successfully"}
+
+class TaskUpdate(BaseModel):
+    title: str = None
+    description: str = None
+    status: str = None
+    assignee_id: UUID = None
+
+@router.put("/tasks/{task_id}", response_model=Task)
+def update_task(task_id: UUID, task_update: TaskUpdate, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if task_update.title is not None:
+        task.title = task_update.title
+    if task_update.description is not None:
+        task.description = task_update.description
+    if task_update.status is not None:
+        task.status = task_update.status
+    if task_update.assignee_id is not None:
+        task.assignee_id = task_update.assignee_id
+
+    db.commit()
+    db.refresh(task)
+
+    return task
+
 from fastapi import FastAPI
 app = FastAPI()
 app.include_router(router, prefix="/api")
@@ -68,4 +105,4 @@ if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
 from fastapi.staticfiles import StaticFiles
-app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
