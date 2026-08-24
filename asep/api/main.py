@@ -59,3 +59,9 @@ app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+app = FastAPI()
+
+if os.path.exists("static"):
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+else:
+    print("Warning: 'static' directory does not exist. Static files will not be served.")

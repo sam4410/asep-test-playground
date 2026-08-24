@@ -1,7 +1,79 @@
-from asep.main import app  # Corrected import statement to reflect the correct module path
+from fastapi.testclient import TestClient
+from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+
+client = TestClient(app)
+
+def test_create_quiz():
+    response = client.post("/quizzes/", json={
+        "title": "Sample Quiz",
+        "questions": []
+    }, params={"teacher_id": "123e4567-e89b-12d3-a456-426614174000"})
+    assert response.status_code == 200
+    assert response.json()["title"] == "Sample Quiz"
+
+def test_read_quiz():
+    response = client.get("/quizzes/123e4567-e89b-12d3-a456-426614174000")
+    assert response.status_code == 200
+    assert "title" in response.json()
+
+def test_list_quizzes():
+    response = client.get("/quizzes/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+def test_update_quiz():
+    response = client.put("/quizzes/123e4567-e89b-12d3-a456-426614174000", json={
+        "title": "Updated Quiz",
+        "questions": []
+    })
+    assert response.status_code == 200
+    assert response.json()["title"] == "Updated Quiz"
+
+def test_delete_quiz():
+    response = client.delete("/quizzes/123e4567-e89b-12d3-a456-426614174000")
+    assert response.status_code == 200
+    assert response.json()["detail"] == "Quiz deleted successfully"
+
+def test_create_question():
+    response = client.post("/questions/", json={
+        "question_text": "What is the capital of France?",
+        "question_type": "multiple_choice",
+        "options": ["Paris", "London", "Berlin"],
+        "correct_answer": "Paris",
+        "quiz_id": "123e4567-e89b-12d3-a456-426614174000"
+    })
+    assert response.status_code == 200
+    assert response.json()["question_text"] == "What is the capital of France?"
+
+def test_read_question():
+    response = client.get("/questions/1")
+    assert response.status_code == 200
+    assert "question_text" in response.json()
+
+def test_list_questions():
+    response = client.get("/questions/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+def test_update_question():
+    response = client.put("/questions/1", json={
+        "question_text": "What is the capital of Germany?",
+        "question_type": "multiple_choice",
+        "options": ["Berlin", "Munich", "Frankfurt"],
+        "correct_answer": "Berlin",
+        "quiz_id": "123e4567-e89b-12d3-a456-426614174000"
+    })
+    assert response.status_code == 200
+    assert response.json()["question_text"] == "What is the capital of Germany?"
+
+def test_delete_question():
+    response = client.delete("/questions/1")
+    assert response.status_code == 200
+    assert response.json()["detail"] == "Question deleted successfully"
 
 def test_create_question(client):
     # Your test implementation here
+    pass    # Your test implementation here
     pass
 from asep.api.main import app  # Adjusted import statement to reflect the correct module path
 from asep.db.models import Product, ShoppingCart, CartItem, OrderHistory
