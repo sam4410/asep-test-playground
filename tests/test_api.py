@@ -1,4 +1,15 @@
 import pytest
+from fastapi.testclient import TestClient
+from api.main import app
+
+client = TestClient(app)
+
+def test_get_products():
+    response = client.get("/api/v1/products")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+import pytest
 from api.expenses import router  # Adjusted import statement to reflect the correct module path
 
 def test_example():
