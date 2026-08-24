@@ -1,9 +1,9 @@
 import sys
 import os
-
 # Adjust the import path for the app
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from app.main import app  # Adjusted import path for the app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+from asep.main import app
+# ... rest of the code ...
 
 client = TestClient(app)
 

@@ -1,10 +1,9 @@
 import sys
 import os
-
-# Adjust the import path for the app
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from app.api.expenses import router  # Adjust the import to reflect the correct module path
-from app.db.models import Expense  # Ensure this import is correctfrom sqlalchemy import create_engine
+# Adjust the import to reflect the correct module path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+from asep.api.expenses import router
+# ... rest of the code ...from app.db.models import Expense  # Ensure this import is correctfrom sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import Base, get_db
 from fastapi import FastAPI
