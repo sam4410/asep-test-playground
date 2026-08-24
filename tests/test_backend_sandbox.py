@@ -1,3 +1,58 @@
+import os
+import sys
+import pytest
+from fastapi.testclient import TestClient
+from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+from asep.db.models import User, Habit, CheckIn  # Ensure models are imported
+# Ensure the static directory exists for testing
+if not os.path.exists("static"):
+    os.makedirs("static")
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c
+@pytest.fixture
+def create_user(client):
+    response = client.post("/signup", json={
+        "username": "testuser",
+        "password": "password123"
+    })
+    return response.json()["id"]
+def test_create_habit(client, create_user):
+    response = client.post("/habits", json={
+        "name": "Exercise",
+        "target_frequency": "daily"
+    }, headers={"Authorization": f"Bearer {create_user}"})  # Assuming token-based auth
+    assert response.status_code == 200
+    assert response.json()["name"] == "Exercise"
+    assert response.json()["target_frequency"] == "daily"
+def test_check_in_habit(client, create_user):
+    # First create a habit
+    habit_response = client.post("/habits", json={
+        "name": "Reading",
+        "target_frequency": "daily"
+    }, headers={"Authorization": f"Bearer {create_user}"})
+    habit_id = habit_response.json()["id"]
+    # Now check in for the habit
+    check_in_response = client.post(f"/habits/{habit_id}/checkin", headers={"Authorization": f"Bearer {create_user}"})
+    assert check_in_response.status_code == 200
+    assert check_in_response.json()["habit_id"] == habit_id
+def test_weekly_progress(client, create_user):
+    # Create a habit
+    habit_response = client.post("/habits", json={
+        "name": "Meditation",
+        "target_frequency": "daily"
+    }, headers={"Authorization": f"Bearer {create_user}"})
+    habit_id = habit_response.json()["id"]
+    # Check in for the habit multiple times
+    for _ in range(3):
+        client.post(f"/habits/{habit_id}/checkin", headers={"Authorization": f"Bearer {create_user}"})
+    # Get weekly progress
+    progress_response = client.get(f"/habits/{habit_id}/weekly_progress", headers={"Authorization": f"Bearer {create_user}"})
+    assert progress_response.status_code == 200
+    assert len(progress_response.json()) > 0
+    assert progress_response.json()[0]["habit_name"] == "Meditation"
+    assert progress_response.json()[0]["completion_count"] == 3
 import sys
 import os
 from fastapi.testclient import TestClient

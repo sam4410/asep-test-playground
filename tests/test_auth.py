@@ -2,14 +2,13 @@ from asep.api.auth import router as auth_router  # Ensure correct import path
 import pytest
 from fastapi.testclient import TestClient
 
-client = TestClient(app)  # Ensure the app is correctly imported
-from asep.db.database import get_db  # Ensure correct import for database session
-
-client = TestClient(app)
-from asep.db.models import User
-
-client = TestClient(app)
-
+from asep.api.auth import router as auth_router  # Ensure correct import path
+from fastapi.testclient import TestClient
+from asep.api.main import app
+from asep.api.auth import router as auth_router  # Ensure correct import path
+from asep.db.models import UserModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 def test_signup_success():
     response = client.post("/api/auth/signup", json={
         "username": "testuser",

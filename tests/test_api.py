@@ -2,13 +2,13 @@ import sys
 import os
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from asep.api.dashboard import router as include_router  # Ensure correct import path
+from fastapi.testclient import TestClient
 from asep.api.main import app
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
-
-client = TestClient(app)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+from asep.api.dashboard import router as include_router  # Ensure correct import path
+from asep.db.models import HabitModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def override_get_db():
