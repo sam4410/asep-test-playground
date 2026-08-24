@@ -1,15 +1,19 @@
-import pytest
-from fastapi import FastAPI
+from api.activity_log import router as activity_log_router
 from fastapi.testclient import TestClient
-from asep.api.quizzes import router as quizzes_router
+from main import app
 
-app = FastAPI()
-app.include_router(quizzes_router)
+client = TestClient(app)
 
-def test_create_quiz():
-    client = TestClient(app)
-    response = client.post("/quizzes/", json={"title": "Sample Quiz", "questions": []}, params={"teacher_id": "some-teacher-id"})
+def test_create_activity_log():
+    response = client.post("/activity_log/", json={"task_id": "some-uuid", "action": "created", "timestamp": "2023-10-01T12:00:00Z"})
     assert response.status_code == 200
+    assert response.json()["message"] == "Activity log entry created successfully"
+
+def test_get_activity_log():
+    response = client.get("/activity_log/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
     assert response.json()["title"] == "Sample Quiz"# ... rest of the code ...
 
 client = TestClient(app)
