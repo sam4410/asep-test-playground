@@ -28,4 +28,27 @@ app.include_router(router, prefix="/api/v1")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)    # Validate cart items and calculate total
+    total_amount = 0
+    for item in request.cart_items:
+        product = db.query(Product).filter(Product.id == item['product_id']).first()
+        if not product or product.stock < item['quantity']:
+            raise HTTPException(status_code=400, detail=f"Insufficient stock for product ID {item['product_id']}")
+        total_amount += product.price * item['quantity']
+
+    # Create order history entries
+    for item in request.cart_items:
+        order = OrderHistory(
+            user_id=request.user_id,
+            product_id=item['product_id'],
+            quantity=item['quantity'],
+            order_date=datetime.now().isoformat(),
+            status='pending'
+        )
+        db.add(order)
+        # Update product stock
+        product.stock -= item['quantity']
+    
+    db.commit()
+    
+    return {"message": "Order created successfully", "total_amount": total_amount}
