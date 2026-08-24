@@ -1,6 +1,9 @@
-import pytest
-from fastapi.testclient import TestClient
 from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+import pytest
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 from asep.db.models import Product, ShoppingCart, CartItem, OrderHistory
 from sqlalchemy.orm import Session
 from asep.database import get_db  # Adjusted import statement to reflect the correct module path
