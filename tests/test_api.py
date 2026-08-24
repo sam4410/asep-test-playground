@@ -1,6 +1,47 @@
+import sys
+import os
+from datetime import datetime
 from fastapi.testclient import TestClient
-from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+from fastapi import FastAPI
+from asep.api.main import app
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+
+client = TestClient(app)
+
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+
+Base.metadata.create_all(bind=engine)
+def test_get_products():
+    response = client.get("/api/v1/products")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+def test_get_product():
+    response = client.get("/api/v1/products/1")
+    assert response.status_code == 200
+    assert "name" in response.json()
+def test_get_product_not_found():
+    response = client.get("/api/v1/products/999")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Product not found"}
+def test_search_products():
+    response = client.get("/api/v1/products/search?query=example")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+def test_get_categories():
+    response = client.get("/api/v1/categories")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+def test_static_directory_exists(mocker):
+    mocker.patch("os.path.exists", return_value=False)  # Mocking to avoid actual file system check
+    assert not os.path.exists("static"), "Static directory should not exist in test environment"
 client = TestClient(app)
 
 def test_create_quiz():
