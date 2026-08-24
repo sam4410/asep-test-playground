@@ -1,9 +1,23 @@
-import pytest
-from fastapi.testclient import TestClient
-from src.asep.main import app  # Corrected import statement to reflect the correct module path
-from asep.db.database import get_db  # Ensure correct import for database session
+import sys
+import os
 
-@pytest.fixture
+# Ensure the src directory is in the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from fastapi.testclient import TestClient
+from fastapi import FastAPI
+from api.dashboard import include_router  # Corrected import statement to reflect the correct module path
+from db.database import get_db, Base, engine
+from sqlalchemy.orm import Session
+# Create the FastAPI app and include the router
+app = FastAPI()
+include_router(app)
+client = TestClient(app)
+def test_dashboard_data():
+    response = client.get("/api/v1/dashboard")
+    assert response.status_code == 200
+    assert "total_spent" in response.json()
+    assert "category_breakdown" in response.json()
+    assert "budgets" in response.json()@pytest.fixture
 def client():
     with TestClient(app) as c:
         yield c

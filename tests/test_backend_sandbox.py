@@ -1,8 +1,18 @@
-from asep.api.expenses import router  # Corrected import statement to reflect the correct module path
+import sys
+import os
 
-def test_expense_creation(client):
-    # Your test implementation here
-    pass
+# Ensure the src directory is in the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from fastapi.testclient import TestClient
+from fastapi import FastAPI
+from api.dashboard import include_router
+from db.database import get_db, Base, engine
+from sqlalchemy.orm import Session
+# Create the FastAPI app and include the router
+app = FastAPI()
+include_router(app)
+# Create the database tables
+Base.metadata.create_all(bind=engine)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
 from asep.api.expenses import router
 from asep.db.models import Expense  # Ensure this import is correct
