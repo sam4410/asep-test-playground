@@ -1,8 +1,7 @@
-import pytest
 from fastapi.testclient import TestClient
-from asep.api.main import app  # Adjusted import statement to reflect the correct module path
-from asep.db.models import Product, ShoppingCart, CartItem, OrderHistory
-from sqlalchemy.orm import Session
+from api.dashboard import router as include_router  # Ensure correct import path
+client = TestClient(include_router)
+# Define your test cases here
 from asep.database import get_db  # Adjusted import statement to reflect the correct module path
 
 client = TestClient(app)

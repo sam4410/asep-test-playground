@@ -1,6 +1,5 @@
-import pytest
 from fastapi.testclient import TestClient
-from api.expenses import router
-from main import app  # Ensure this import is correct based on your project structure
-
+from api.dashboard import router as include_router  # Ensure correct import path
+client = TestClient(include_router)
+# Define your test cases here
 app.include_router(router)
