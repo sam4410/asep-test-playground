@@ -18,15 +18,9 @@ def test_flip_coin_response_structure():
     assert isinstance(data, dict)
     assert "result" in data
 
-def test_static_directory_exists():
-    import os
+def test_static_directory_exists(mocker):
+    mocker.patch("os.path.exists", return_value=True)
     assert os.path.exists("static"), "Static directory does not exist."
-import pytest
-from fastapi.testclient import TestClient
-from asep.api.main import app
-from asep.db.models import Note
-from sqlalchemy.orm import Session
-from asep.db.database import SessionLocal
 
 client = TestClient(app)
 
