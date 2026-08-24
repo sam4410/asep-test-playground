@@ -1,9 +1,28 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.main import app
+from main import app  # Adjusted import path for the app
 
 client = TestClient(app)
 
+def test_get_expenses_by_category():
+    response = client.get("/expenses/?category=Food")
+    assert response.status_code == 200
+    data = response.json()
+    assert "expenses" in data  # Check if the key exists
+    assert isinstance(data["expenses"], list)  # Ensure it's a list
+    # Additional checks can be added here to validate the contents of the expenses list
+
+def test_create_expense():
+    response = client.post("/expenses/", json={
+        "amount": 10.0,
+        "category": "Food",
+        "date": "2023-10-01",
+        "user_id": 1
+    })
+    assert response.status_code == 201
+    data = response.json()
+    assert data["amount"] == 10.0
+    assert data["category"] == "Food"
 def test_get_products():
     response = client.get("/api/v1/products")
     assert response.status_code == 200
