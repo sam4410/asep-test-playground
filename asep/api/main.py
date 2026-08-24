@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-from db.models import HabitModel
-from db.database import get_db
-from pydantic import BaseModel
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+
+app = FastAPI()
+
 from fastapi import APIRouter
 from datetime import datetime
 
@@ -32,3 +33,6 @@ def get_habits(user_id: str, db: Session = Depends(get_db)):
     return habits
 
 app.include_router(router, prefix="/api")
+# Mount static files
+# Commenting out the static directory mount to avoid errors during testing
+ # app.mount("/", StaticFiles(directory="static", html=True), name="static")
