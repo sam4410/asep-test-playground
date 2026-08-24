@@ -1,11 +1,11 @@
-# Team Task Management Tool
-A tool for team members to create and assign tasks efficiently.
+# Habit Tracker
+A web application for individuals to track their habits, monitor progress, and maintain consistency.
 
 ## Setup
 1. Clone the repository:
    ```
    git clone <repository-url>
-   cd team-task-management-tool
+   cd habit-tracker
    ```
 2. Install Python dependencies:
    ```
@@ -18,178 +18,177 @@ A tool for team members to create and assign tasks efficiently.
 
 ## API Endpoints
 
-### Create Task
+### User Signup
 - **Method:** POST
-- **Path:** /api/tasks/
+- **Path:** /signup
 - **Request Body:**
   ```json
   {
-    "title": "string",
-    "description": "string",
-    "assignee_id": "UUID"
+    "username": "string",
+    "password": "string"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "id": "UUID",
-    "title": "string",
-    "description": "string",
-    "status": "string",
-    "assignee_id": "UUID",
-    "created_at": "datetime",
-    "updated_at": "datetime"
+    "id": "integer",
+    "username": "string"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/api/tasks/ -H "Content-Type: application/json" -d '{"title": "Sample Task", "description": "This is a sample task", "assignee_id": "123e4567-e89b-12d3-a456-426614174000"}'
+  curl -X POST http://localhost:8000/signup -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123"}'
   ```
 
-### List Tasks
-- **Method:** GET
-- **Path:** /api/tasks/
-- **Response Shape:**
-  ```json
-  [
-    {
-      "id": "UUID",
-      "title": "string",
-      "description": "string",
-      "status": "string",
-      "assignee_id": "UUID",
-      "created_at": "datetime",
-      "updated_at": "datetime"
-    }
-  ]
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/api/tasks/
-  ```
-
-### Read Task
-- **Method:** GET
-- **Path:** /api/tasks/{task_id}
-- **Response Shape:**
-  ```json
-  {
-    "id": "UUID",
-    "title": "string",
-    "description": "string",
-    "status": "string",
-    "assignee_id": "UUID",
-    "created_at": "datetime",
-    "updated_at": "datetime"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000
-  ```
-
-### Assign Task
+### User Login
 - **Method:** POST
-- **Path:** /api/tasks/{task_id}/assign/
+- **Path:** /login
 - **Request Body:**
   ```json
   {
-    "assignee_id": "UUID"
+    "username": "string",
+    "password": "string"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "id": "UUID",
-    "title": "string",
-    "description": "string",
-    "status": "string",
-    "assignee_id": "UUID",
-    "created_at": "datetime",
-    "updated_at": "datetime"
+    "id": "integer",
+    "username": "string"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000/assign/ -H "Content-Type: application/json" -d '{"assignee_id": "123e4567-e89b-12d3-a456-426614174001"}'
+  curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123"}'
   ```
 
-### Get User Tasks
+### Get User
 - **Method:** GET
-- **Path:** /api/tasks/user/{user_id}
-- **Response Shape:**
-  ```json
-  [
-    {
-      "id": "UUID",
-      "title": "string",
-      "description": "string",
-      "status": "string",
-      "assignee_id": "UUID",
-      "created_at": "datetime",
-      "updated_at": "datetime"
-    }
-  ]
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/api/tasks/user/123e4567-e89b-12d3-a456-426614174001
-  ```
-
-### Update Task
-- **Method:** PUT
-- **Path:** /api/tasks/{task_id}
-- **Request Body:**
-  ```json
-  {
-    "title": "string",
-    "description": "string",
-    "status": "string",
-    "assignee_id": "UUID"
-  }
-  ```
+- **Path:** /users/{user_id}
 - **Response Shape:**
   ```json
   {
-    "id": "UUID",
-    "title": "string",
-    "description": "string",
-    "status": "string",
-    "assignee_id": "UUID",
-    "created_at": "datetime",
-    "updated_at": "datetime"
+    "id": "integer",
+    "username": "string"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X PUT http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000 -H "Content-Type: application/json" -d '{"title": "Updated Task", "description": "Updated description", "status": "in_progress", "assignee_id": "123e4567-e89b-12d3-a456-426614174001"}'
+  curl -X GET http://localhost:8000/users/1
   ```
 
-### Delete Task
+### Delete User
 - **Method:** DELETE
-- **Path:** /api/tasks/{task_id}
+- **Path:** /users/{user_id}
 - **Response Shape:**
   ```json
   {
-    "detail": "Task deleted successfully"
+    "detail": "User deleted successfully"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X DELETE http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000
+  curl -X DELETE http://localhost:8000/users/1
+  ```
+
+### Update User
+- **Method:** PUT
+- **Path:** /users/{user_id}
+- **Request Body:**
+  ```json
+  {
+    "username": "string",
+    "password": "string"
+  }
+  ```
+- **Response Shape:**
+  ```json
+  {
+    "id": "integer",
+    "username": "string"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X PUT http://localhost:8000/users/1 -H "Content-Type: application/json" -d '{"username": "newuser", "password": "newpassword"}'
+  ```
+
+### Create Habit
+- **Method:** POST
+- **Path:** /habits
+- **Request Body:**
+  ```json
+  {
+    "name": "string",
+    "target_frequency": "string"  // e.g., "daily", "weekly"
+  }
+  ```
+- **Response Shape:**
+  ```json
+  {
+    "id": "integer",
+    "name": "string",
+    "target_frequency": "string"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X POST http://localhost:8000/habits -H "Content-Type: application/json" -d '{"name": "Exercise", "target_frequency": "daily"}'
+  ```
+
+### Daily Check-in
+- **Method:** POST
+- **Path:** /habits/{habit_id}/checkin
+- **Response Shape:**
+  ```json
+  {
+    "habit_id": "integer",
+    "date": "string",
+    "streak": "integer",
+    "longest_streak": "integer"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X POST http://localhost:8000/habits/1/checkin
+  ```
+
+### Weekly Progress
+- **Method:** GET
+- **Path:** /habits/{user_id}/weekly_progress
+- **Response Shape:**
+  ```json
+  [
+    {
+      "habit_name": "string",
+      "completion_rate": "float"
+    }
+  ]
+  ```
+- **Curl Example:**
+  ```
+  curl -X GET http://localhost:8000/habits/1/weekly_progress
   ```
 
 ## Models
 
-### Task
+### User
 - **Fields:**
-  - id: UUID
-  - title: string
-  - description: string
-  - status: string
-  - assignee_id: UUID
-  - created_at: datetime
-  - updated_at: datetime
+  - id: integer
+  - username: string
+
+### Habit
+- **Fields:**
+  - id: integer
+  - name: string
+  - target_frequency: string
+
+### CheckIn
+- **Fields:**
+  - id: integer
+  - habit_id: integer
+  - date: string
+  - streak: integer
 
 ## Existing Sections
 # asep-test-playground
