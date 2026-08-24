@@ -1,9 +1,14 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-
+from starlette.staticfiles import StaticFiles
+import os
 
 app = FastAPI()
 
+# Ensure the static directory exists before mounting
+if os.path.exists("static"):
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+else:
+    raise RuntimeError("Directory 'static' does not exist")
 from fastapi import APIRouter
 from datetime import datetime
 
