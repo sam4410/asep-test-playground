@@ -1,7 +1,8 @@
-import pytest
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from fastapi.testclient import TestClient
-from ..api.expenses import router  # Adjust the import to reflect the correct module path
-from db.models import Expense
+from api.expenses import router  # Adjust the import to reflect the correct module pathfrom db.models import Expense
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import Base, get_db
