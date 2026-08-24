@@ -1,9 +1,17 @@
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
-
-
+import pytest
+from fastapi.testclient import TestClient
+from asep.api.main import app  # Adjusted import statement to reflect the correct module path
+import os  # Added import for os module
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c
 @app.get("/api/v1/projects")
 def list_projects() -> list[dict]:
     # Mock projects endpoint
     return [{"id": 1, "name": "ASEP Platform", "status": "running"}]
+import os  # Added import for os module
+# Ensure the static directory exists
+if not os.path.exists("static"):
+    os.makedirs("static")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")  # Changed mount path to "/static" to avoid conflict with API routes

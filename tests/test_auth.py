@@ -6,5 +6,3 @@ import os  # Added import for os module
 def client():
     with TestClient(app) as c:
         yield c
-client = TestClient(app)
-
