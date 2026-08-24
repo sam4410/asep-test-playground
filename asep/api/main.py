@@ -1,3 +1,4 @@
+import os  # Added import for os to check static directory existence
 import pytest
 from fastapi.testclient import TestClient
 from asep.api.main import app  # Adjusted import statement to reflect the correct module path
@@ -14,4 +15,8 @@ import os  # Added import for os module
 # Ensure the static directory exists
 if not os.path.exists("static"):
     os.makedirs("static")
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")  # Changed mount path to "/static" to avoid conflict with API routes
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")  # Changed mount path to "/static" to avoid conflict with API routesapp = FastAPI()
+
+# Ensure the static directory exists before mounting
+if not os.path.exists("static"):  # Check for static directory existence
+    os.makedirs("static")  # Create the directory if it doesn't exist
