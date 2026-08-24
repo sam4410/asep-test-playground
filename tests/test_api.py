@@ -1,6 +1,8 @@
 import pytest
-from fastapi.testclient import TestClient
-from ..api.expenses import router  # Adjusted import statement to reflect the correct module path
+from api.expenses import router  # Adjusted import statement to reflect the correct module path
+
+def test_example():
+    assert True
 from db.models import Expense
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

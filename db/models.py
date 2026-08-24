@@ -11,6 +11,13 @@ class Product(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     price = Column(Float, nullable=False)
+    category = Column(String, nullable=False)  # New field for product category
+    image_url = Column(String, nullable=True)  # New field for product image URL
+    stock = Column(Integer, nullable=False)
+    def __repr__(self):
+        return f"<Product(name={self.name}, price={self.price}, stock={self.stock})>"
+    description = Column(String, nullable=True)
+    price = Column(Float, nullable=False)
     stock = Column(Integer, nullable=False)
 
     def __repr__(self):
