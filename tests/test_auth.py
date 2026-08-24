@@ -1,6 +1,8 @@
+from asep.api.auth import router as auth_router  # Ensure correct import path
 import pytest
 from fastapi.testclient import TestClient
-from asep.api.auth import router as auth_router  # Ensure correct import path
+
+client = TestClient(app)  # Ensure the app is correctly imported
 from asep.db.database import get_db  # Ensure correct import for database session
 
 client = TestClient(app)

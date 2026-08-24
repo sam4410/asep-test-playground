@@ -65,3 +65,10 @@ if os.path.exists("static"):
     app.mount("/", StaticFiles(directory="static", html=True), name="static")
 else:
     print("Warning: 'static' directory does not exist. Static files will not be served.")
+
+# Static files
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
+# Ensure the static directory exists
+if not os.path.exists("static"):
+    os.makedirs("static")
