@@ -3,6 +3,43 @@ import os
 from datetime import datetime
 from fastapi.testclient import TestClient
 from asep.api.main import app
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+
+client = TestClient(app)
+
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+
+Base.metadata.create_all(bind=engine)
+def test_get_products():
+    response = client.get("/api/v1/products")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+def test_get_product():
+    response = client.get("/api/v1/products/1")
+    assert response.status_code == 200
+    assert "name" in response.json()
+def test_get_product_not_found():
+    response = client.get("/api/v1/products/999")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Product not found"}
+def test_search_products():
+    response = client.get("/api/v1/products/search?query=example")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+def test_get_categories():
+    response = client.get("/api/v1/categories")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+from fastapi.testclient import TestClient
+from asep.api.main import app
 from asep.db.models import HabitModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

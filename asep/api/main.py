@@ -36,3 +36,9 @@ app.include_router(router, prefix="/api")
 # Mount static files
 # Commenting out the static directory mount to avoid errors during testing
  # app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app = FastAPI()
+
+if os.path.exists("static"):
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
+# Other app configurations and routes follow...
