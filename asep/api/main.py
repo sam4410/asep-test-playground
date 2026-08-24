@@ -1,3 +1,6 @@
+import os
+
+os.makedirs("static", exist_ok=True)  # Ensure the 'static' directory exists
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from asep.api.quizzes import router as quizzes_router
