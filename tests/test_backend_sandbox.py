@@ -1,10 +1,11 @@
-from asep.api.expenses import router  # Adjusted import statement to reflect the correct module path
-import pytest
-from fastapi.testclient import TestClient
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-client = TestClient(app)  # Ensure the app is correctly imported
 from fastapi.testclient import TestClient
-from fastapi import FastAPI
+from src.api.expenses import router  # Corrected import statement to reflect the correct module path
+client = TestClient(router)
+
+ # Add your test cases here
 from api.dashboard import include_router
 from db.database import get_db, Base, engine
 from sqlalchemy.orm import Session

@@ -1,5 +1,8 @@
-from asep.api.main import app  # Corrected import statement to reflect the correct module path
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-def test_task_creation(client):
-    # Your test implementation here
-    pass
+from fastapi.testclient import TestClient
+from src.api.main import app
+client = TestClient(app)
+
+ # Add your test cases here

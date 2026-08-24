@@ -1,10 +1,11 @@
-from asep.api.main import app  # Adjusted import statement to reflect the correct module path
-import pytest
-from fastapi.testclient import TestClient
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-client = TestClient(app)  # Ensure the app is correctly imported
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from fastapi.testclient import TestClient
+from src.api.main import app  # Corrected import statement to reflect the correct module path
+client = TestClient(app)
+
+ # Add your test cases here
 from fastapi import FastAPI
 from api.dashboard import include_router  # Corrected import statement to reflect the correct module path
 from db.database import get_db, Base, engine
