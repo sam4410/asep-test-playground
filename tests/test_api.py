@@ -1,9 +1,16 @@
-import sys
-import os
-# Adjust the import path for the app
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
-from asep.main import app
-# ... rest of the code ...
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from asep.api.quizzes import router as quizzes_router
+
+app = FastAPI()
+app.include_router(quizzes_router)
+
+def test_create_quiz():
+    client = TestClient(app)
+    response = client.post("/quizzes/", json={"title": "Sample Quiz", "questions": []}, params={"teacher_id": "some-teacher-id"})
+    assert response.status_code == 200
+    assert response.json()["title"] == "Sample Quiz"# ... rest of the code ...
 
 client = TestClient(app)
 
