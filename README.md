@@ -1,121 +1,99 @@
-# Team Task Manager
-A lightweight web application for small teams to track tasks and manage work without the overhead of a full project-management suite.
+# Student Quiz Platform
+A web application for teachers to create quizzes and track student performance without the complexity of a full learning-management system.
 
 ## Setup
 1. Clone the repository: `git clone <repository-url>`
 2. Navigate to the project directory: `cd <project-directory>`
 3. Install dependencies: `pip install -r requirements.txt`
 4. Set up the database: Follow the instructions in the database setup documentation.
-5. Run the application: `python app.py` (or the appropriate command for your setup).
+5. Run the application: `python api/main.py` (or the appropriate command for your setup).
 
 ## API Endpoints
 
-### User Signup
+### Create Quiz
 - **Method:** POST
-- **Path:** /api/auth/signup
-- **Request Body:**
-  ```json
-  {
-    "username": "string",
-    "password": "string",
-    "email": "string"
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "message": "User created successfully",
-    "user_id": "string"
-  }
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X POST http://localhost:5000/api/auth/signup -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123", "email": "test@example.com"}'
-  ```
-
-### User Login
-- **Method:** POST
-- **Path:** /api/auth/login
-- **Request Body:**
-  ```json
-  {
-    "username": "string",
-    "password": "string"
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "message": "Login successful",
-    "token": "string"
-  }
-  ```
-- **Curl Example:**
-  ```bash
-  curl -X POST http://localhost:5000/api/auth/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123"}'
-  ```
-
-### Create Task
-- **Method:** POST
-- **Path:** /api/tasks
+- **Path:** /quizzes/
 - **Request Body:**
   ```json
   {
     "title": "string",
-    "description": "string",
-    "assignee": "string",
-    "due_date": "string",
-    "status": "string" // "todo", "in-progress", "done"
+    "questions": []
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "message": "Task created successfully",
-    "task_id": "string"
+    "id": "string",
+    "title": "string",
+    "teacher_id": "string",
+    "created_at": "string",
+    "questions": []
   }
   ```
 - **Curl Example:**
   ```bash
-  curl -X POST http://localhost:5000/api/tasks -H "Content-Type: application/json" -d '{"title": "New Task", "description": "Task description", "assignee": "testuser", "due_date": "2023-12-31", "status": "todo"}'
+  curl -X POST http://localhost:8000/quizzes/ -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": []}' --data-urlencode "teacher_id=some-teacher-id"
   ```
 
-### Get Tasks
+### Get Quiz by ID
 - **Method:** GET
-- **Path:** /api/tasks
+- **Path:** /quizzes/{quiz_id}
+- **Response Shape:**
+  ```json
+  {
+    "id": "string",
+    "title": "string",
+    "teacher_id": "string",
+    "created_at": "string",
+    "questions": []
+  }
+  ```
+- **Curl Example:**
+  ```bash
+  curl -X GET http://localhost:8000/quizzes/some-quiz-id
+  ```
+
+### List Quizzes
+- **Method:** GET
+- **Path:** /quizzes/
 - **Response Shape:**
   ```json
   [
     {
-      "task_id": "string",
+      "id": "string",
       "title": "string",
-      "description": "string",
-      "assignee": "string",
-      "due_date": "string",
-      "status": "string"
+      "teacher_id": "string",
+      "created_at": "string",
+      "questions": []
     }
   ]
   ```
 - **Curl Example:**
   ```bash
-  curl -X GET http://localhost:5000/api/tasks
+  curl -X GET http://localhost:8000/quizzes/
   ```
 
 ## Models
 
 ### User
-- `user_id`: string
+- `id`: UUID
 - `username`: string
 - `password`: string
-- `email`: string
+- `role`: string (values: "teacher", "student")
 
-### Task
-- `task_id`: string
+### Quiz
+- `id`: UUID
 - `title`: string
-- `description`: string
-- `assignee`: string
-- `due_date`: string
-- `status`: string (values: "todo", "in-progress", "done")
+- `teacher_id`: UUID
+- `created_at`: datetime
+- `questions`: list (JSON format)
+
+### QuizSubmission
+- `id`: UUID
+- `quiz_id`: UUID
+- `student_id`: UUID
+- `answers`: list (JSON format)
+- `submitted_at`: datetime
 
 ## Existing Sections
 # asep-test-playground
