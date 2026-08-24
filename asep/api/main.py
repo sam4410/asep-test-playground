@@ -45,3 +45,7 @@ if os.path.exists("static"):
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+
+app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
