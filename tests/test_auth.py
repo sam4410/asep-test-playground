@@ -1,7 +1,7 @@
-from fastapi.testclient import TestClient
-from asep.api.auth import router as auth_router
-from asep.api.main import app
-from sqlalchemy.orm import Session
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep/api')))
+from asep.api.auth import router as auth_router  # Adjusted import statement to reflect the correct module pathfrom sqlalchemy.orm import Session
 from asep.db.models import User
 
 client = TestClient(app)
