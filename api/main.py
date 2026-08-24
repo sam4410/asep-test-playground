@@ -52,3 +52,10 @@ if __name__ == "__main__":
     db.commit()
     
     return {"message": "Order created successfully", "total_amount": total_amount}
+app = FastAPI()
+
+static_dir = "static"
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+
+app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
