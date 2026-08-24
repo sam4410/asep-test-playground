@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=api --cov=asep tests/
+          pytest --cov=api
 
   build:
     runs-on: ubuntu-latest
@@ -46,4 +46,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t student-quiz-platform .
+          docker build -t my-online-store .
