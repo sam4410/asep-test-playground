@@ -1,11 +1,11 @@
-# Online Quiz Platform
-An online quiz platform where teachers can create quizzes and students can take them.
+# Team Task Management Tool
+A tool for team members to create and assign tasks efficiently.
 
 ## Setup
 1. Clone the repository:
    ```
    git clone <repository-url>
-   cd online-quiz-platform
+   cd team-task-management-tool
    ```
 2. Install Python dependencies:
    ```
@@ -18,14 +18,15 @@ An online quiz platform where teachers can create quizzes and students can take 
 
 ## API Endpoints
 
-### Create Quiz
+### Create Task
 - **Method:** POST
-- **Path:** /quizzes/
+- **Path:** /api/tasks/
 - **Request Body:**
   ```json
   {
     "title": "string",
-    "questions": "list"
+    "description": "string",
+    "assignee_id": "UUID"
   }
   ```
 - **Response Shape:**
@@ -33,59 +34,67 @@ An online quiz platform where teachers can create quizzes and students can take 
   {
     "id": "UUID",
     "title": "string",
-    "questions": "list",
-    "teacher_id": "UUID"
+    "description": "string",
+    "status": "string",
+    "assignee_id": "UUID",
+    "created_at": "datetime",
+    "updated_at": "datetime"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X POST http://localhost:8000/quizzes/ -H "Content-Type: application/json" -d '{"title": "Sample Quiz", "questions": []}'
+  curl -X POST http://localhost:8000/api/tasks/ -H "Content-Type: application/json" -d '{"title": "Sample Task", "description": "This is a sample task", "assignee_id": "123e4567-e89b-12d3-a456-426614174000"}'
   ```
 
-### Read Quiz
+### List Tasks
 - **Method:** GET
-- **Path:** /quizzes/{quiz_id}
-- **Response Shape:**
-  ```json
-  {
-    "id": "UUID",
-    "title": "string",
-    "questions": "list",
-    "teacher_id": "UUID"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000
-  ```
-
-### List Quizzes
-- **Method:** GET
-- **Path:** /quizzes/
+- **Path:** /api/tasks/
 - **Response Shape:**
   ```json
   [
     {
       "id": "UUID",
       "title": "string",
-      "questions": "list",
-      "teacher_id": "UUID"
+      "description": "string",
+      "status": "string",
+      "assignee_id": "UUID",
+      "created_at": "datetime",
+      "updated_at": "datetime"
     }
   ]
   ```
 - **Curl Example:**
   ```
-  curl -X GET http://localhost:8000/quizzes/
+  curl -X GET http://localhost:8000/api/tasks/
   ```
 
-### Update Quiz
-- **Method:** PUT
-- **Path:** /quizzes/{quiz_id}
+### Read Task
+- **Method:** GET
+- **Path:** /api/tasks/{task_id}
+- **Response Shape:**
+  ```json
+  {
+    "id": "UUID",
+    "title": "string",
+    "description": "string",
+    "status": "string",
+    "assignee_id": "UUID",
+    "created_at": "datetime",
+    "updated_at": "datetime"
+  }
+  ```
+- **Curl Example:**
+  ```
+  curl -X GET http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000
+  ```
+
+### Assign Task
+- **Method:** POST
+- **Path:** /api/tasks/{task_id}/assign/
 - **Request Body:**
   ```json
   {
-    "title": "string",
-    "questions": "list"
+    "assignee_id": "UUID"
   }
   ```
 - **Response Shape:**
@@ -93,205 +102,94 @@ An online quiz platform where teachers can create quizzes and students can take 
   {
     "id": "UUID",
     "title": "string",
-    "questions": "list",
-    "teacher_id": "UUID"
+    "description": "string",
+    "status": "string",
+    "assignee_id": "UUID",
+    "created_at": "datetime",
+    "updated_at": "datetime"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X PUT http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000 -H "Content-Type: application/json" -d '{"title": "Updated Quiz", "questions": []}'
+  curl -X POST http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000/assign/ -H "Content-Type: application/json" -d '{"assignee_id": "123e4567-e89b-12d3-a456-426614174001"}'
   ```
 
-### Delete Quiz
-- **Method:** DELETE
-- **Path:** /quizzes/{quiz_id}
-- **Response Shape:**
-  ```json
-  {
-    "detail": "Quiz deleted successfully"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X DELETE http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000
-  ```
-
-### Create Question
-- **Method:** POST
-- **Path:** /questions/
-- **Request Body:**
-  ```json
-  {
-    "question_text": "string",
-    "question_type": "string",
-    "options": "list",
-    "correct_answer": "string",
-    "quiz_id": "UUID"
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "id": "integer",
-    "question_text": "string",
-    "question_type": "string",
-    "options": "string",
-    "correct_answer": "string",
-    "quiz_id": "UUID"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X POST http://localhost:8000/questions/ -H "Content-Type: application/json" -d '{"question_text": "What is the capital of France?", "question_type": "multiple_choice", "options": ["Paris", "London", "Berlin"], "correct_answer": "Paris", "quiz_id": "123e4567-e89b-12d3-a456-426614174000"}'
-  ```
-
-### Read Question
+### Get User Tasks
 - **Method:** GET
-- **Path:** /questions/{question_id}
-- **Response Shape:**
-  ```json
-  {
-    "id": "integer",
-    "question_text": "string",
-    "question_type": "string",
-    "options": "string",
-    "correct_answer": "string",
-    "quiz_id": "UUID"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/questions/1
-  ```
-
-### List Questions
-- **Method:** GET
-- **Path:** /questions/
+- **Path:** /api/tasks/user/{user_id}
 - **Response Shape:**
   ```json
   [
     {
-      "id": "integer",
-      "question_text": "string",
-      "question_type": "string",
-      "options": "string",
-      "correct_answer": "string",
-      "quiz_id": "UUID"
+      "id": "UUID",
+      "title": "string",
+      "description": "string",
+      "status": "string",
+      "assignee_id": "UUID",
+      "created_at": "datetime",
+      "updated_at": "datetime"
     }
   ]
   ```
 - **Curl Example:**
   ```
-  curl -X GET http://localhost:8000/questions/
+  curl -X GET http://localhost:8000/api/tasks/user/123e4567-e89b-12d3-a456-426614174001
   ```
 
-### Update Question
+### Update Task
 - **Method:** PUT
-- **Path:** /questions/{question_id}
+- **Path:** /api/tasks/{task_id}
 - **Request Body:**
   ```json
   {
-    "question_text": "string",
-    "question_type": "string",
-    "options": "list",
-    "correct_answer": "string"
+    "title": "string",
+    "description": "string",
+    "status": "string",
+    "assignee_id": "UUID"
   }
   ```
 - **Response Shape:**
   ```json
   {
-    "id": "integer",
-    "question_text": "string",
-    "question_type": "string",
-    "options": "string",
-    "correct_answer": "string",
-    "quiz_id": "UUID"
+    "id": "UUID",
+    "title": "string",
+    "description": "string",
+    "status": "string",
+    "assignee_id": "UUID",
+    "created_at": "datetime",
+    "updated_at": "datetime"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X PUT http://localhost:8000/questions/1 -H "Content-Type: application/json" -d '{"question_text": "Updated Question", "question_type": "multiple_choice", "options": ["Paris", "London", "Berlin"], "correct_answer": "Paris"}'
+  curl -X PUT http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000 -H "Content-Type: application/json" -d '{"title": "Updated Task", "description": "Updated description", "status": "in_progress", "assignee_id": "123e4567-e89b-12d3-a456-426614174001"}'
   ```
 
-### Delete Question
+### Delete Task
 - **Method:** DELETE
-- **Path:** /questions/{question_id}
+- **Path:** /api/tasks/{task_id}
 - **Response Shape:**
   ```json
   {
-    "detail": "Question deleted successfully"
+    "detail": "Task deleted successfully"
   }
   ```
 - **Curl Example:**
   ```
-  curl -X DELETE http://localhost:8000/questions/1
-  ```
-
-### Submit Quiz
-- **Method:** POST
-- **Path:** /quizzes/submit
-- **Request Body:**
-  ```json
-  {
-    "quiz_id": "UUID",
-    "student_id": "UUID",
-    "answers": {
-      "question_id": "string"
-    }
-  }
-  ```
-- **Response Shape:**
-  ```json
-  {
-    "detail": "Quiz submitted successfully"
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X POST http://localhost:8000/quizzes/submit -H "Content-Type: application/json" -d '{"quiz_id": "123e4567-e89b-12d3-a456-426614174000", "student_id": "123e4567-e89b-12d3-a456-426614174001", "answers": {"1": "Paris"}}'
-  ```
-
-### Get Quiz Results
-- **Method:** GET
-- **Path:** /quizzes/{quiz_id}/results
-- **Response Shape:**
-  ```json
-  {
-    "quiz_id": "UUID",
-    "results": {
-      "student_id": "UUID",
-      "score": "integer"
-    }
-  }
-  ```
-- **Curl Example:**
-  ```
-  curl -X GET http://localhost:8000/quizzes/123e4567-e89b-12d3-a456-426614174000/results
+  curl -X DELETE http://localhost:8000/api/tasks/123e4567-e89b-12d3-a456-426614174000
   ```
 
 ## Models
 
-### Quiz
+### Task
 - **Fields:**
   - id: UUID
   - title: string
-  - questions: list
-  - teacher_id: UUID
-
-### Question
-- **Fields:**
-  - id: integer
-  - question_text: string
-  - question_type: string
-  - options: string
-  - correct_answer: string
-  - quiz_id: UUID
-
-### QuizSubmission
-- **Fields:**
-  - quiz_id: UUID
-  - student_id: UUID
-  - answers: dict
+  - description: string
+  - status: string
+  - assignee_id: UUID
+  - created_at: datetime
+  - updated_at: datetime
 
 ## Existing Sections
 # asep-test-playground
