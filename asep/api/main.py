@@ -9,3 +9,8 @@ if os.path.exists(static_dir) and os.path.isdir(static_dir):
     app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
 else:
     print(f"Warning: Static directory '{static_dir}' does not exist. Static files will not be served.")
+app = FastAPI()
+
+app.mount("/", StaticFiles(directory="public", html=True), name="static")
+
+# Other routes and configurations...
