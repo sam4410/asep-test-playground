@@ -1,7 +1,79 @@
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
+import os
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from asep.api.main import app
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+
+client = TestClient(app)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+app.dependency_overrides[get_db] = override_get_db
+if not os.path.exists("static"):  # Ensure the static directory exists
+    os.makedirs("static")  # Create the directory if it does not exist
+Base.metadata.create_all(bind=engine)
+def test_checkout_success():
+    # Setup: Create a product with sufficient stock
+    product_response = client.post("/api/v1/admin/products", json={
+        "name": "Test Product",
+        "description": "A product for testing",
+        "price": 10.0,
+        "category": "Test",
+        "image_url": "http://example.com/image.png",
+        "stock": 10
+    })
+    assert product_response.status_code == 200
+    product_id = product_response.json()["id"]
+    # Test: Checkout with sufficient stock
+    checkout_response = client.post("/api/v1/checkout", json={
+        "user_id": 1,
+        "cart_items": [
+            {"product_id": product_id, "quantity": 2}
+        ]
+    })
+    assert checkout_response.status_code == 200
+    assert checkout_response.json()["message"] == "Order created successfully"
+    assert checkout_response.json()["total_amount"] == 20.0
+def test_checkout_insufficient_stock():
+    # Setup: Create a product with limited stock
+    product_response = client.post("/api/v1/admin/products", json={
+        "name": "Test Product",
+        "description": "A product for testing",
+        "price": 10.0,
+        "category": "Test",
+        "image_url": "http://example.com/image.png",
+        "stock": 1
+    })
+    assert product_response.status_code == 200
+    product_id = product_response.json()["id"]
+    # Test: Attempt to checkout with more quantity than available
+    checkout_response = client.post("/api/v1/checkout", json={
+        "user_id": 1,
+        "cart_items": [
+            {"product_id": product_id, "quantity": 2}
+        ]
+    })
+    assert checkout_response.status_code == 400
+    assert checkout_response.json() == {"detail": "Insufficient stock for product ID 1"}
+def test_checkout_product_not_found():
+    # Test: Attempt to checkout with a non-existent product
+    checkout_response = client.post("/api/v1/checkout", json={
+        "user_id": 1,
+        "cart_items": [
+            {"product_id": 999, "quantity": 1}
+        ]
+    })
+    assert checkout_response.status_code == 404
+    assert checkout_response.json() == {"detail": "Product ID 999 not found"}
 from src.api.main import app  # Corrected import statement to reflect the correct module path
 client = TestClient(app)
 

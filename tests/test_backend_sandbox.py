@@ -1,7 +1,10 @@
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
+import os
 from fastapi.testclient import TestClient
+from asep.api.main import app
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep')))
+client = TestClient(app)
 from src.api.expenses import router  # Corrected import statement to reflect the correct module path
 client = TestClient(router)
 
