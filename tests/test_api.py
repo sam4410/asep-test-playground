@@ -1,5 +1,7 @@
 import sys
-import pytest
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../asep/api')))
+
 from api.dashboard import router as include_router  # Ensure correct import path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))

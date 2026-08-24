@@ -20,3 +20,10 @@ app.mount("/static", StaticFiles(directory="static", html=True), name="static") 
 # Ensure the static directory exists before mounting
 if not os.path.exists("static"):  # Check for static directory existence
     os.makedirs("static")  # Create the directory if it doesn't exist
+
+app = FastAPI()
+
+# Serve static files from the 'public' directory
+app.mount("/", StaticFiles(directory="public", html=True), name="static")
+
+# Other app configurations and routes...
