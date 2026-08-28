@@ -1,1 +1,6 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+clerk-backend-api
+python-multipart
 requests==2.25.0
