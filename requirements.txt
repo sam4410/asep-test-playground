@@ -3,4 +3,5 @@ uvicorn[standard]
 sqlalchemy
 clerk-backend-api
 python-multipart
+sentinel-sdk[fastapi]
 requests==2.25.0
