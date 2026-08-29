@@ -250,7 +250,6 @@ def get_dashboard_stats(
 
         window_start = today - datetime.timedelta(days=6)
         window_checkins = sum(1 for d in checkin_dates if window_start <= d <= today)
-        target = max(habit.target_frequency, 1) * 7 / 7  # per-day target baseline
         expected = max(habit.target_frequency, 1)
         ratio = min(window_checkins / expected, 1.0) if expected else 0.0
         completion_ratios.append(ratio)
