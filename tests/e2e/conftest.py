@@ -8,12 +8,18 @@ import pytest
 
 
 def _browsers_available() -> bool:
-    """Best-effort check for installed Playwright browser binaries."""
+    """Best-effort check for installed Playwright browser binaries.
+
+    Merely referencing ``executable_path`` does not verify the browser
+    binary is actually present on disk, so we perform a real (cheap)
+    launch/close cycle to confirm the binary exists and is runnable.
+    """
     try:
         from playwright.sync_api import sync_playwright
 
         with sync_playwright() as p:
-            p.chromium.executable_path
+            browser = p.chromium.launch()
+            browser.close()
             return True
     except Exception:
         return False
