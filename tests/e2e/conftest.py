@@ -33,9 +33,8 @@ def _browsers_available() -> bool:
 @pytest.fixture(scope="session", autouse=True)
 def _skip_if_browsers_missing():  # noqa: D401 - fixture docstring below
     """Skip the e2e session cleanly if browsers aren't installed."""
-    if not _browsers_available():
+    if not _browsers_available():  # pragma: no cover - environment dependent
         pytest.skip(
             "Playwright browsers are not installed; skipping e2e tests.",
-            allow_module_level=True,
-        )
+            allow_module_level=True,        )
     yield  # session-scoped guard; no browser install is triggered here
