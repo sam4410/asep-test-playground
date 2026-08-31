@@ -34,7 +34,8 @@ def _browsers_available() -> bool:
 def _skip_if_browsers_missing():  # noqa: D401 - fixture docstring below
     """Skip the e2e session cleanly if browsers aren't installed."""
     if not _browsers_available():
-        pytest.skip(            "Playwright browsers are not installed; skipping e2e tests.",
+        pytest.skip(
+            "Playwright browsers are not installed; skipping e2e tests.",
             allow_module_level=True,
         )
     yield
