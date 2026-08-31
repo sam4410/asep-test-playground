@@ -1,8 +1,8 @@
 """Pytest configuration for end-to-end Playwright tests.
 
 Skips e2e tests gracefully when Playwright browser binaries are not
-installed, instead of forcing a heavy browser install (which can
-trigger out-of-memory failures in constrained CI/sandbox environments).
+installed, instead of forcing a heavy browser install, which can
+trigger out-of-memory failures in constrained CI/sandbox environments.
 """
 import os
 import pytest
