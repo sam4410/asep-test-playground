@@ -38,4 +38,4 @@ def _skip_if_browsers_missing():  # noqa: D401 - fixture docstring below
             "Playwright browsers are not installed; skipping e2e tests.",
             allow_module_level=True,
         )
-    yield
+    yield  # session-scoped guard; no browser install is triggered here
