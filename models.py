@@ -3,6 +3,7 @@ import datetime
 
 from sqlalchemy import (
     Column,
+    Time,
     String,
     Integer,
     Boolean,
@@ -31,6 +32,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow, nullable=False)
 
     habits = relationship("Habit", back_populates="owner", cascade="all, delete-orphan")
+    settings = relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
 
 class Habit(Base):
@@ -66,3 +68,20 @@ class HabitCheckin(Base):
         UniqueConstraint("habit_id", "date", name="habit_checkins_habit_date_uidx"),
         Index("habit_checkins_date_idx", "date"),
     )
+
+
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=_uuid_default)
+    user_id = Column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    daily_reset_time = Column(Time, nullable=False, default=datetime.time(0, 0, 0))
+    timezone = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow, nullable=False)
+
+    user = relationship("User", back_populates="settings")
