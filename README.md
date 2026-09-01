@@ -1,5 +1,5 @@
 # Settings Page for Account Management
-This project adds a settings page for managing user account preferences such as theme and language.
+This project adds a settings page for managing user account preferences such as theme and notifications.
 
 ## Setup
 1. Install dependencies:
@@ -20,7 +20,8 @@ This project adds a settings page for managing user account preferences such as 
   ```json
   {
     "theme": "string",
-    "language": "string"
+    "notificationsEnabled": "boolean",
+    "habits": "array"
   }
   ```
 - **Curl Example:**
@@ -35,19 +36,19 @@ This project adds a settings page for managing user account preferences such as 
   ```json
   {
     "theme": "string",
-    "language": "string"
+    "notificationsEnabled": "boolean"
   }
   ```
 - **Response Shape:**
   ```json
   {
     "theme": "string",
-    "language": "string"
+    "notificationsEnabled": "boolean"
   }
   ```
 - **Curl Example:**
   ```bash
-  curl -X POST http://localhost:8000/settings -H "Content-Type: application/json" -d '{"theme": "dark", "language": "en"}'
+  curl -X POST http://localhost:8000/settings -H "Content-Type: application/json" -d '{"theme": "dark", "notificationsEnabled": true}'
   ```
 
 ### Reset Settings
@@ -58,7 +59,7 @@ This project adds a settings page for managing user account preferences such as 
   ```json
   {
     "theme": "string",
-    "language": "string"
+    "notificationsEnabled": "boolean"
   }
   ```
 - **Curl Example:**
@@ -69,15 +70,13 @@ This project adds a settings page for managing user account preferences such as 
 ## Models
 ### SettingsResponse
 - **theme:** string
-- **language:** string
+- **notificationsEnabled:** boolean
+- **habits:** array
 
 ### SettingsUpdate
 - **theme:** string
-- **language:** string
+- **notificationsEnabled:** boolean
 
 ## Tests
-### Unit Tests
-- Located in `frontend/components/__tests__/SettingsPage.test.tsx`
-
 ### E2E Tests
 - Located in `frontend/components/__tests__/test_e2e_settings_page.py`
