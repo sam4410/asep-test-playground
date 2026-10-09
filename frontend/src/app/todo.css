@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.todo-card {
+  max-width: 760px;
+  margin: 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.page-header,
+.add-form,
+.task-row,
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.page-header {
+  justify-content: space-between;
+}
+
+.eyebrow {
+  margin: 0 0 var(--spacing-xs);
+  color: var(--color-primary);
+  font-size: 12px;
+  letter-spacing: .12em;
+}
+
+.page-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(28px, 5vw, 42px);
+}
+
+.subtitle {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-subtext);
+  font-size: 13px;
+}
+
+.add-form {
+  margin-bottom: var(--spacing-lg);
+}
+
+.add-form input {
+  min-width: 0;
+  flex: 1;
+}
+
+.error-banner {
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+}
+
+.state-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-md);
+  color: var(--color-subtext);
+  text-align: center;
+}
+
+.state-message strong {
+  color: var(--color-text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 20px;
+}
+
+.task-list {
+  display: grid;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task-row {
+  min-height: 58px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.task-title {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.is-complete .task-title {
+  color: var(--color-subtext);
+  text-decoration: line-through;
+}
+
+@media (max-width: 560px) {
+  .add-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .add-form button {
+    width: 100%;
+  }
+
+  .task-row {
+    flex-wrap: wrap;
+  }
+
+  .task-title {
+    min-width: calc(100% - 52px);
+  }
+}
